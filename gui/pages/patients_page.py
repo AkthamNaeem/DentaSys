@@ -12,8 +12,30 @@ class PatientsPage:
         self.load_patients()
         
     def setup_ui(self):
-        # Main frame
-        self.frame = ttk.Frame(self.parent)
+        # Main frame with scrollable canvas
+        self.main_canvas = tk.Canvas(self.parent, highlightthickness=0)
+        self.scrollbar = ttk.Scrollbar(self.parent, orient="vertical", command=self.main_canvas.yview)
+        self.scrollable_frame = ttk.Frame(self.main_canvas)
+        
+        # Configure scrolling
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.main_canvas.configure(scrollregion=self.main_canvas.bbox("all"))
+        )
+        
+        self.main_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.main_canvas.configure(yscrollcommand=self.scrollbar.set)
+        
+        # Pack canvas and scrollbar
+        self.main_canvas.pack(side="left", fill="both", expand=True)
+        self.scrollbar.pack(side="right", fill="y")
+        
+        # Bind mousewheel to canvas
+        self.main_canvas.bind("<MouseWheel>", self._on_mousewheel)
+        self.scrollable_frame.bind("<MouseWheel>", self._on_mousewheel)
+        
+        # Set up the actual frame content
+        self.frame = self.scrollable_frame
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(1, weight=1)
         
@@ -22,6 +44,10 @@ class PatientsPage:
         
         # Content frame
         self.setup_content()
+        
+    def _on_mousewheel(self, event):
+        """Handle mouse wheel scrolling"""
+        self.main_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
         
     def setup_header(self):
         header_frame = ttk.Frame(self.frame, style='Card.TFrame', padding=20)
@@ -126,6 +152,9 @@ class PatientsPage:
         # Bind events
         self.patients_tree.bind('<<TreeviewSelect>>', self.on_patient_select)
         self.patients_tree.bind('<Double-1>', self.on_patient_double_click)
+        
+        # Bind mousewheel to treeview
+        self.patients_tree.bind("<MouseWheel>", self._on_mousewheel)
         
     def load_patients(self, search_term=None):
         """Load patients data into the table"""

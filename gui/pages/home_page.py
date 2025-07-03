@@ -15,8 +15,30 @@ class HomePage:
         self.setup_ui()
         
     def setup_ui(self):
-        # Main frame
-        self.frame = ttk.Frame(self.parent)
+        # Main frame with scrollable canvas
+        self.main_canvas = tk.Canvas(self.parent, highlightthickness=0)
+        self.scrollbar = ttk.Scrollbar(self.parent, orient="vertical", command=self.main_canvas.yview)
+        self.scrollable_frame = ttk.Frame(self.main_canvas)
+        
+        # Configure scrolling
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.main_canvas.configure(scrollregion=self.main_canvas.bbox("all"))
+        )
+        
+        self.main_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.main_canvas.configure(yscrollcommand=self.scrollbar.set)
+        
+        # Pack canvas and scrollbar
+        self.main_canvas.pack(side="left", fill="both", expand=True)
+        self.scrollbar.pack(side="right", fill="y")
+        
+        # Bind mousewheel to canvas
+        self.main_canvas.bind("<MouseWheel>", self._on_mousewheel)
+        self.scrollable_frame.bind("<MouseWheel>", self._on_mousewheel)
+        
+        # Set up the actual frame content
+        self.frame = self.scrollable_frame
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(2, weight=1)
         
@@ -31,6 +53,10 @@ class HomePage:
         
         # Load initial data
         self.load_dashboard_stats()
+        
+    def _on_mousewheel(self, event):
+        """Handle mouse wheel scrolling"""
+        self.main_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
         
     def setup_welcome_section(self):
         # Welcome frame
