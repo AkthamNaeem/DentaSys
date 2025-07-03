@@ -4,9 +4,9 @@ from models.helper import handle_date_time, handle_date
 
 
 class Patient:
-    def __init__(self, patient_id=None, name=None, phone=None, gender=None,
+    def __init__(self, id=None, name=None, phone=None, gender=None,
                  birth_date=None, notes=None, created_at=None, deleted_at=None):
-        self.id = patient_id
+        self.id = id
         self.name = name
         self.phone = phone
         self.gender = gender

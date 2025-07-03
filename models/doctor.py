@@ -4,8 +4,8 @@ from models.helper import handle_date_time
 
 
 class Doctor:
-    def __init__(self, doctor_id=None, name=None, phone=None, created_at=None, deleted_at=None):
-        self.id = doctor_id
+    def __init__(self, id=None, name=None, phone=None, created_at=None, deleted_at=None):
+        self.id = id
         self.name = name
         self.phone = phone
         self.created_at = handle_date_time(created_at)

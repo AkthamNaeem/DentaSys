@@ -6,9 +6,9 @@ from models.helper import handle_date_time
 
 
 class Record:
-    def __init__(self, record_id=None, doctor_id=None, patient_id=None, created_at=None,
+    def __init__(self, id=None, doctor_id=None, patient_id=None, created_at=None,
                  doctor_name=None, patient_name=None):
-        self.id = record_id
+        self.id = id
         self.doctor_id = doctor_id
         self.patient_id = patient_id
         self.created_at = created_at
@@ -179,7 +179,7 @@ class Record:
         cursor.execute("""
             SELECT * FROM treatments 
             WHERE record_id = ?
-            ORDER BY treatment_date DESC
+            ORDER BY date DESC
         """, (self.id,))
         treatments = [Treatment(**row) for row in cursor.fetchall()]
         conn.close()
@@ -192,7 +192,7 @@ class Record:
         cursor.execute("""
             SELECT * FROM payments 
             WHERE record_id = ?
-            ORDER BY payment_date DESC
+            ORDER BY date DESC
         """, (self.id,))
         payments = [Payment(**row) for row in cursor.fetchall()]
         conn.close()

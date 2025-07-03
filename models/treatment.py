@@ -4,12 +4,12 @@ from models.helper import handle_date
 
 
 class Treatment:
-    def __init__(self, treatment_id=None, record_id=None, name=None, cost=None, treatment_date=None, notes=None):
-        self.id = treatment_id
+    def __init__(self, id=None, record_id=None, name=None, cost=None, date=None, notes=None):
+        self.id = id
         self.record_id = record_id
         self.name = name
         self.cost = cost
-        self.date = handle_date(treatment_date)
+        self.date = handle_date(date)
         self.notes = notes
 
     @classmethod
@@ -51,29 +51,28 @@ class Treatment:
         cursor.execute("""
             SELECT * FROM treatments 
             WHERE record_id = ?
-            ORDER BY treatment_date DESC
+            ORDER BY date DESC
         """, (record_id,))
         treatments = [cls(**row) for row in cursor.fetchall()]
         conn.close()
         return treatments
 
     @classmethod
-    def update(cls, treatment_id, treatment_name=None, cost=None, treatment_date=None, notes=None):
+    def update(cls, treatment_id, name=None, cost=None, treatment_date=None, notes=None):
         conn = get_db_connection()
         cursor = conn.cursor()
         updates = []
         params = []
 
-        if treatment_name is not None:
-            updates.append("treatment_name = ?")
-            params.append(treatment_name)
+        if name is not None:
+            updates.append("name = ?")
+            params.append(name)
         if cost is not None:
             updates.append("cost = ?")
             params.append(cost)
         if treatment_date is not None:
-            if hasattr(treatment_date, 'strftime'):
-                treatment_date = treatment_date.strftime("%Y-%m-%d %H:%M:%S")
-            updates.append("treatment_date = ?")
+            treatment_date = handle_date(treatment_date)
+            updates.append("date = ?")
             params.append(treatment_date)
         if notes is not None:
             updates.append("notes = ?")
