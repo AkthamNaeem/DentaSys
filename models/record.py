@@ -72,9 +72,10 @@ class Record:
                             if k in ['id', 'doctor_id', 'patient_id', 'created_at']})
             record.doctor_name = row['doctor_name']
             record.patient_name = row['patient_name']
-            record.amount = record.amount()
-            record.cost = record.cost()
-            record.balance = record.balance()
+            # Calculate financial data
+            record._total_amount = record.get_total_amount()
+            record._total_cost = record.get_total_cost()
+            record._balance = record.get_balance()
             records.append(record)
         conn.close()
         return records
@@ -156,14 +157,14 @@ class Record:
         return result is not None
 
     @classmethod
-    def delete(cls, patient_id):
+    def delete(cls, record_id):
         conn = get_db_connection()
         cursor = conn.cursor()
         try:
-            if cls.record_has_payments(patient_id) | cls.record_has_treatments(patient_id):
+            if cls.record_has_payments(record_id) or cls.record_has_treatments(record_id):
                 return False
             else:
-                cursor.execute("DELETE FROM patients WHERE id = ?", (patient_id,))
+                cursor.execute("DELETE FROM records WHERE id = ?", (record_id,))
                 conn.commit()
                 return cursor.rowcount > 0
         except Exception as e:
@@ -198,13 +199,26 @@ class Record:
         conn.close()
         return payments
 
-    def amount(self):
+    def get_total_amount(self):
+        """Get total amount paid for this record"""
         payments = self.payments()
-        return sum(p.amount for p in payments)
+        return sum(p.amount for p in payments if p.amount)
+
+    def get_total_cost(self):
+        """Get total cost of treatments for this record"""
+        treatments = self.treatments()
+        return sum(t.cost for t in treatments if t.cost)
+
+    def get_balance(self):
+        """Get balance (cost - amount paid)"""
+        return self.get_total_cost() - self.get_total_amount()
+
+    # Keep the old method names for backward compatibility
+    def amount(self):
+        return self.get_total_amount()
 
     def cost(self):
-        treatments = self.treatments()
-        return sum(t.cost for t in treatments)
+        return self.get_total_cost()
 
     def balance(self):
-        return self.cost() - self.amount()
+        return self.get_balance()

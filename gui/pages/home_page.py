@@ -345,9 +345,16 @@ class HomePage:
         # Insert new data
         for record in records:
             created_date = record.created_at.strftime("%Y-%m-%d %H:%M") if record.created_at else ""
-            cost = f"${record.cost:.2f}" if hasattr(record, 'cost') else "$0.00"
-            amount = f"${record.amount:.2f}" if hasattr(record, 'amount') else "$0.00"
-            balance = f"${record.balance:.2f}" if hasattr(record, 'balance') else "$0.00"
+            
+            # Use the cached financial data if available, otherwise calculate
+            if hasattr(record, '_total_cost'):
+                cost = f"${record._total_cost:.2f}"
+                amount = f"${record._total_amount:.2f}"
+                balance = f"${record._balance:.2f}"
+            else:
+                cost = f"${record.cost():.2f}"
+                amount = f"${record.amount():.2f}"
+                balance = f"${record.balance():.2f}"
             
             self.records_tree.insert('', 'end', values=(
                 record.id,
