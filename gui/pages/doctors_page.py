@@ -59,26 +59,26 @@ class DoctorsPage:
         self.main_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
         
     def setup_header(self):
-        header_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=20)
+        header_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=25)
         header_frame.grid(row=0, column=0, sticky="ew", pady=(0, 20))
         header_frame.columnconfigure(1, weight=1)
         
-        # Title
+        # Title with better typography
         title_label = ttk.Label(header_frame, text="👨‍⚕️ Doctors Management", style='Title.TLabel')
         title_label.grid(row=0, column=0, sticky="w")
         
-        # Buttons frame
+        # Buttons frame with better spacing
         buttons_frame = ttk.Frame(header_frame)
         buttons_frame.grid(row=0, column=1, sticky="e")
         
-        # Add Doctor button
+        # Add Doctor button with better sizing
         self.add_btn = ttk.Button(
             buttons_frame, 
             text="➕ Add Doctor", 
             style='Success.TButton',
             command=self.add_doctor
         )
-        self.add_btn.pack(side='right', padx=(10, 0))
+        self.add_btn.pack(side='right', padx=(15, 0), ipadx=15, ipady=8)
         
         # Edit Doctor button
         self.edit_btn = ttk.Button(
@@ -88,7 +88,7 @@ class DoctorsPage:
             command=self.edit_doctor,
             state='disabled'
         )
-        self.edit_btn.pack(side='right', padx=(10, 0))
+        self.edit_btn.pack(side='right', padx=(15, 0), ipadx=15, ipady=8)
         
         # Delete Doctor button
         self.delete_btn = ttk.Button(
@@ -98,27 +98,27 @@ class DoctorsPage:
             command=self.delete_doctor,
             state='disabled'
         )
-        self.delete_btn.pack(side='right')
+        self.delete_btn.pack(side='right', ipadx=15, ipady=8)
         
     def setup_content(self):
-        # Content frame
-        content_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=20)
+        # Content frame with better padding
+        content_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=25)
         content_frame.grid(row=1, column=0, sticky="nsew")
         content_frame.columnconfigure(0, weight=1)
         content_frame.rowconfigure(1, weight=1)
         
-        # Search frame
+        # Search frame with improved layout
         search_frame = ttk.Frame(content_frame)
-        search_frame.grid(row=0, column=0, sticky="ew", pady=(0, 15))
+        search_frame.grid(row=0, column=0, sticky="ew", pady=(0, 20))
         search_frame.columnconfigure(1, weight=1)
         
-        # Search label and entry
-        search_label = ttk.Label(search_frame, text="🔍 Search Doctors:")
-        search_label.grid(row=0, column=0, sticky="w", padx=(0, 10))
+        # Search label and entry with better sizing
+        search_label = ttk.Label(search_frame, text="🔍 Search Doctors:", font=('Segoe UI', 12, 'bold'))
+        search_label.grid(row=0, column=0, sticky="w", padx=(0, 15))
         
         self.search_var = tk.StringVar()
-        self.search_entry = ttk.Entry(search_frame, textvariable=self.search_var, width=30)
-        self.search_entry.grid(row=0, column=1, sticky="w")
+        self.search_entry = ttk.Entry(search_frame, textvariable=self.search_var, font=('Segoe UI', 11), width=40)
+        self.search_entry.grid(row=0, column=1, sticky="w", ipady=6)
         self.search_var.trace('w', self.on_search)
         
         # Table frame
@@ -127,22 +127,22 @@ class DoctorsPage:
         table_frame.columnconfigure(0, weight=1)
         table_frame.rowconfigure(0, weight=1)
         
-        # Doctors table
+        # Doctors table with better height
         columns = ('ID', 'Name', 'Phone', 'Created', 'Status')
-        self.doctors_tree = ttk.Treeview(table_frame, columns=columns, show='headings', height=15)
+        self.doctors_tree = ttk.Treeview(table_frame, columns=columns, show='headings', height=18)
         
-        # Configure columns
+        # Configure columns with better widths
         self.doctors_tree.heading('ID', text='ID')
         self.doctors_tree.heading('Name', text='Name')
         self.doctors_tree.heading('Phone', text='Phone')
         self.doctors_tree.heading('Created', text='Created')
         self.doctors_tree.heading('Status', text='Status')
         
-        self.doctors_tree.column('ID', width=60, anchor='center')
-        self.doctors_tree.column('Name', width=200)
-        self.doctors_tree.column('Phone', width=150)
-        self.doctors_tree.column('Created', width=150, anchor='center')
-        self.doctors_tree.column('Status', width=100, anchor='center')
+        self.doctors_tree.column('ID', width=80, anchor='center')
+        self.doctors_tree.column('Name', width=250)
+        self.doctors_tree.column('Phone', width=180)
+        self.doctors_tree.column('Created', width=180, anchor='center')
+        self.doctors_tree.column('Status', width=120, anchor='center')
         
         # Scrollbars
         v_scrollbar = ttk.Scrollbar(table_frame, orient='vertical', command=self.doctors_tree.yview)
