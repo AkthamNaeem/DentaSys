@@ -26,16 +26,17 @@ def apply_styles(root):
         'gray_light': '#bdc3c7'
     }
     
-    # Configure Notebook (tabs)
+    # Configure Notebook (tabs) with better sizing
     style.configure('TNotebook', 
                    background=colors['light'],
-                   borderwidth=0)
+                   borderwidth=0,
+                   tabmargins=[2, 5, 2, 0])
     
     style.configure('TNotebook.Tab',
                    background=colors['white'],
                    foreground=colors['secondary'],
-                   padding=[20, 10],
-                   font=('Segoe UI', 10, 'normal'))
+                   padding=[25, 12],
+                   font=('Segoe UI', 11, 'normal'))
     
     style.map('TNotebook.Tab',
               background=[('selected', colors['primary']),
@@ -52,41 +53,41 @@ def apply_styles(root):
                    relief='solid',
                    borderwidth=1)
     
-    # Configure Labels
+    # Configure Labels with better typography
     style.configure('TLabel',
                    background=colors['white'],
                    foreground=colors['secondary'],
-                   font=('Segoe UI', 9))
+                   font=('Segoe UI', 10))
     
     style.configure('Heading.TLabel',
                    background=colors['white'],
                    foreground=colors['secondary'],
-                   font=('Segoe UI', 12, 'bold'))
+                   font=('Segoe UI', 14, 'bold'))
     
     style.configure('Title.TLabel',
                    background=colors['white'],
                    foreground=colors['primary'],
-                   font=('Segoe UI', 16, 'bold'))
+                   font=('Segoe UI', 18, 'bold'))
     
-    # Configure Entry widgets
+    # Configure Entry widgets with better sizing
     style.configure('TEntry',
                    fieldbackground=colors['white'],
                    borderwidth=1,
                    relief='solid',
-                   padding=8,
-                   font=('Segoe UI', 9))
+                   padding=10,
+                   font=('Segoe UI', 10))
     
     style.map('TEntry',
               focuscolor=[('!focus', colors['gray_light']),
                          ('focus', colors['primary'])])
     
-    # Configure Buttons
+    # Configure Buttons with better sizing
     style.configure('TButton',
                    background=colors['primary'],
                    foreground=colors['white'],
                    borderwidth=0,
-                   padding=[15, 8],
-                   font=('Segoe UI', 9, 'bold'))
+                   padding=[18, 10],
+                   font=('Segoe UI', 10, 'bold'))
     
     style.map('TButton',
               background=[('active', colors['primary_dark']),
@@ -119,21 +120,22 @@ def apply_styles(root):
               background=[('active', '#c0392b'),
                          ('pressed', '#c0392b')])
     
-    # Configure Treeview
+    # Configure Treeview with better sizing
     style.configure('Treeview',
                    background=colors['white'],
                    foreground=colors['secondary'],
                    fieldbackground=colors['white'],
                    borderwidth=1,
                    relief='solid',
-                   font=('Segoe UI', 9))
+                   font=('Segoe UI', 10),
+                   rowheight=25)
     
     style.configure('Treeview.Heading',
                    background=colors['light'],
                    foreground=colors['secondary'],
                    borderwidth=1,
                    relief='solid',
-                   font=('Segoe UI', 9, 'bold'))
+                   font=('Segoe UI', 10, 'bold'))
     
     style.map('Treeview',
               background=[('selected', colors['primary'])],
@@ -147,3 +149,16 @@ def apply_styles(root):
                    arrowcolor=colors['gray'],
                    darkcolor=colors['light'],
                    lightcolor=colors['light'])
+    
+    # Configure Combobox
+    style.configure('TCombobox',
+                   fieldbackground=colors['white'],
+                   background=colors['white'],
+                   borderwidth=1,
+                   relief='solid',
+                   padding=10,
+                   font=('Segoe UI', 10))
+    
+    style.map('TCombobox',
+              focuscolor=[('!focus', colors['gray_light']),
+                         ('focus', colors['primary'])])
