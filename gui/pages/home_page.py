@@ -3,6 +3,7 @@ from tkinter import ttk
 import threading
 import time
 from models import Doctor, Patient, Record
+from localization.translations import translations
 
 
 class HomePage:
@@ -11,6 +12,9 @@ class HomePage:
         self.search_thread = None
         self.search_delay = 0.5  # Delay in seconds before searching
         self.last_search_time = 0
+        
+        # Register for language change notifications
+        translations.add_observer(self.update_ui)
         
         self.setup_ui()
         
@@ -74,19 +78,19 @@ class HomePage:
         welcome_frame.columnconfigure(1, weight=1)
         
         # Welcome text with improved typography
-        welcome_label = ttk.Label(
+        self.welcome_label = ttk.Label(
             welcome_frame, 
-            text="Welcome to DentaSys", 
+            text=translations.get('welcome_title'), 
             style='Title.TLabel'
         )
-        welcome_label.grid(row=0, column=0, columnspan=2, sticky="w")
+        self.welcome_label.grid(row=0, column=0, columnspan=2, sticky="w")
         
-        description_label = ttk.Label(
+        self.description_label = ttk.Label(
             welcome_frame, 
-            text="Manage your dental practice efficiently with our comprehensive management system.",
+            text=translations.get('welcome_description'),
             font=('Segoe UI', 12)
         )
-        description_label.grid(row=1, column=0, columnspan=2, sticky="w", pady=(8, 20))
+        self.description_label.grid(row=1, column=0, columnspan=2, sticky="w", pady=(8, 20))
         
         # Stats frame with better spacing
         stats_frame = ttk.Frame(welcome_frame)
@@ -94,9 +98,9 @@ class HomePage:
         stats_frame.columnconfigure((0, 1, 2), weight=1)
         
         # Stats cards with improved sizing
-        self.doctors_stat = self.create_stat_card(stats_frame, "Doctors", "0", "#3498db", 0)
-        self.patients_stat = self.create_stat_card(stats_frame, "Patients", "0", "#27ae60", 1)
-        self.records_stat = self.create_stat_card(stats_frame, "Records", "0", "#f39c12", 2)
+        self.doctors_stat = self.create_stat_card(stats_frame, translations.get('stat_doctors'), "0", "#3498db", 0)
+        self.patients_stat = self.create_stat_card(stats_frame, translations.get('stat_patients'), "0", "#27ae60", 1)
+        self.records_stat = self.create_stat_card(stats_frame, translations.get('stat_records'), "0", "#f39c12", 2)
         
     def create_stat_card(self, parent, title, value, color, column):
         card_frame = ttk.Frame(parent, style='Card.TFrame', padding=20)
@@ -120,7 +124,7 @@ class HomePage:
         )
         title_label.pack(pady=(5, 0))
         
-        return value_label
+        return {'value': value_label, 'title': title_label}
         
     def setup_search_section(self):
         # Search frame with better padding
@@ -129,12 +133,12 @@ class HomePage:
         search_frame.columnconfigure(1, weight=1)
         
         # Search label with improved typography
-        search_label = ttk.Label(search_frame, text="🔍 Search", style='Heading.TLabel')
-        search_label.grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 15))
+        self.search_label = ttk.Label(search_frame, text=translations.get('search_title'), style='Heading.TLabel')
+        self.search_label.grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 15))
         
         # Search entry with better sizing
-        search_entry_label = ttk.Label(search_frame, text="Search doctors, patients, or records:", font=('Segoe UI', 11))
-        search_entry_label.grid(row=1, column=0, sticky="w", pady=(0, 8))
+        self.search_entry_label = ttk.Label(search_frame, text=translations.get('search_placeholder'), font=('Segoe UI', 11))
+        self.search_entry_label.grid(row=1, column=0, sticky="w", pady=(0, 8))
         
         self.search_var = tk.StringVar()
         self.search_entry = ttk.Entry(
@@ -151,7 +155,7 @@ class HomePage:
         # Search status with better spacing
         self.search_status = ttk.Label(
             search_frame, 
-            text="Type to search across doctors, patients, and records...",
+            text=translations.get('search_instruction'),
             font=('Segoe UI', 10),
             foreground="#7f8c8d"
         )
@@ -165,7 +169,7 @@ class HomePage:
         results_frame.rowconfigure(1, weight=1)
         
         # Results label with improved spacing
-        self.results_label = ttk.Label(results_frame, text="📊 Dashboard", style='Heading.TLabel')
+        self.results_label = ttk.Label(results_frame, text=translations.get('dashboard_title'), style='Heading.TLabel')
         self.results_label.grid(row=0, column=0, sticky="w", pady=(0, 15))
         
         # Create notebook for different result types
@@ -192,10 +196,10 @@ class HomePage:
         self.doctors_tree = ttk.Treeview(doctors_frame, columns=doctors_columns, show='headings', height=12)
         
         # Configure columns with better widths
-        self.doctors_tree.heading('ID', text='ID')
-        self.doctors_tree.heading('Name', text='Name')
-        self.doctors_tree.heading('Phone', text='Phone')
-        self.doctors_tree.heading('Created', text='Created')
+        self.doctors_tree.heading('ID', text=translations.get('col_id'))
+        self.doctors_tree.heading('Name', text=translations.get('col_name'))
+        self.doctors_tree.heading('Phone', text=translations.get('col_phone'))
+        self.doctors_tree.heading('Created', text=translations.get('col_created'))
         
         self.doctors_tree.column('ID', width=60, anchor='center')
         self.doctors_tree.column('Name', width=250)
@@ -210,7 +214,7 @@ class HomePage:
         self.doctors_tree.grid(row=0, column=0, sticky="nsew")
         doctors_scrollbar.grid(row=0, column=1, sticky="ns")
         
-        self.results_notebook.add(doctors_frame, text="👨‍⚕️ Doctors")
+        self.results_notebook.add(doctors_frame, text=translations.get('tab_doctors'))
         
     def setup_patients_results(self):
         # Patients frame with padding
@@ -223,11 +227,11 @@ class HomePage:
         self.patients_tree = ttk.Treeview(patients_frame, columns=patients_columns, show='headings', height=12)
         
         # Configure columns with better widths
-        self.patients_tree.heading('ID', text='ID')
-        self.patients_tree.heading('Name', text='Name')
-        self.patients_tree.heading('Phone', text='Phone')
-        self.patients_tree.heading('Gender', text='Gender')
-        self.patients_tree.heading('Birth Date', text='Birth Date')
+        self.patients_tree.heading('ID', text=translations.get('col_id'))
+        self.patients_tree.heading('Name', text=translations.get('col_name'))
+        self.patients_tree.heading('Phone', text=translations.get('col_phone'))
+        self.patients_tree.heading('Gender', text=translations.get('col_gender'))
+        self.patients_tree.heading('Birth Date', text=translations.get('col_birth_date'))
         
         self.patients_tree.column('ID', width=60, anchor='center')
         self.patients_tree.column('Name', width=250)
@@ -243,7 +247,7 @@ class HomePage:
         self.patients_tree.grid(row=0, column=0, sticky="nsew")
         patients_scrollbar.grid(row=0, column=1, sticky="ns")
         
-        self.results_notebook.add(patients_frame, text="👤 Patients")
+        self.results_notebook.add(patients_frame, text=translations.get('tab_patients'))
         
     def setup_records_results(self):
         # Records frame with padding
@@ -256,13 +260,13 @@ class HomePage:
         self.records_tree = ttk.Treeview(records_frame, columns=records_columns, show='headings', height=12)
         
         # Configure columns with better widths
-        self.records_tree.heading('ID', text='ID')
-        self.records_tree.heading('Doctor', text='Doctor')
-        self.records_tree.heading('Patient', text='Patient')
-        self.records_tree.heading('Cost', text='Cost')
-        self.records_tree.heading('Paid', text='Paid')
-        self.records_tree.heading('Balance', text='Balance')
-        self.records_tree.heading('Created', text='Created')
+        self.records_tree.heading('ID', text=translations.get('col_id'))
+        self.records_tree.heading('Doctor', text=translations.get('col_doctor'))
+        self.records_tree.heading('Patient', text=translations.get('col_patient'))
+        self.records_tree.heading('Cost', text=translations.get('col_total_cost'))
+        self.records_tree.heading('Paid', text=translations.get('col_total_paid'))
+        self.records_tree.heading('Balance', text=translations.get('col_balance'))
+        self.records_tree.heading('Created', text=translations.get('col_created'))
         
         self.records_tree.column('ID', width=60, anchor='center')
         self.records_tree.column('Doctor', width=180)
@@ -280,7 +284,54 @@ class HomePage:
         self.records_tree.grid(row=0, column=0, sticky="nsew")
         records_scrollbar.grid(row=0, column=1, sticky="ns")
         
-        self.results_notebook.add(records_frame, text="📋 Records")
+        self.results_notebook.add(records_frame, text=translations.get('tab_records'))
+        
+    def update_ui(self):
+        """Update UI elements when language changes"""
+        # Update welcome section
+        self.welcome_label.config(text=translations.get('welcome_title'))
+        self.description_label.config(text=translations.get('welcome_description'))
+        
+        # Update stat card titles
+        self.doctors_stat['title'].config(text=translations.get('stat_doctors'))
+        self.patients_stat['title'].config(text=translations.get('stat_patients'))
+        self.records_stat['title'].config(text=translations.get('stat_records'))
+        
+        # Update search section
+        self.search_label.config(text=translations.get('search_title'))
+        self.search_entry_label.config(text=translations.get('search_placeholder'))
+        self.search_status.config(text=translations.get('search_instruction'))
+        
+        # Update results section
+        self.results_label.config(text=translations.get('dashboard_title'))
+        
+        # Update table headers
+        # Doctors table
+        self.doctors_tree.heading('ID', text=translations.get('col_id'))
+        self.doctors_tree.heading('Name', text=translations.get('col_name'))
+        self.doctors_tree.heading('Phone', text=translations.get('col_phone'))
+        self.doctors_tree.heading('Created', text=translations.get('col_created'))
+        
+        # Patients table
+        self.patients_tree.heading('ID', text=translations.get('col_id'))
+        self.patients_tree.heading('Name', text=translations.get('col_name'))
+        self.patients_tree.heading('Phone', text=translations.get('col_phone'))
+        self.patients_tree.heading('Gender', text=translations.get('col_gender'))
+        self.patients_tree.heading('Birth Date', text=translations.get('col_birth_date'))
+        
+        # Records table
+        self.records_tree.heading('ID', text=translations.get('col_id'))
+        self.records_tree.heading('Doctor', text=translations.get('col_doctor'))
+        self.records_tree.heading('Patient', text=translations.get('col_patient'))
+        self.records_tree.heading('Cost', text=translations.get('col_total_cost'))
+        self.records_tree.heading('Paid', text=translations.get('col_total_paid'))
+        self.records_tree.heading('Balance', text=translations.get('col_balance'))
+        self.records_tree.heading('Created', text=translations.get('col_created'))
+        
+        # Update notebook tab texts
+        self.results_notebook.tab(0, text=translations.get('tab_doctors'))
+        self.results_notebook.tab(1, text=translations.get('tab_patients'))
+        self.results_notebook.tab(2, text=translations.get('tab_records'))
         
     def load_dashboard_stats(self):
         """Load dashboard statistics"""
@@ -291,9 +342,9 @@ class HomePage:
             records = Record.get_all()
             
             # Update stats
-            self.doctors_stat.config(text=str(len(doctors)))
-            self.patients_stat.config(text=str(len(patients)))
-            self.records_stat.config(text=str(len(records)))
+            self.doctors_stat['value'].config(text=str(len(doctors)))
+            self.patients_stat['value'].config(text=str(len(patients)))
+            self.records_stat['value'].config(text=str(len(records)))
             
             # Load initial data in tables
             self.load_doctors_data(doctors)
@@ -328,11 +379,15 @@ class HomePage:
         # Insert new data
         for patient in patients:
             birth_date = patient.birth_date.strftime("%Y-%m-%d") if patient.birth_date else ""
+            gender_text = ""
+            if patient.gender:
+                gender_text = translations.get('gender_male') if patient.gender == 'Male' else translations.get('gender_female')
+            
             self.patients_tree.insert('', 'end', values=(
                 patient.id,
                 patient.name,
                 patient.phone,
-                patient.gender or "",
+                gender_text,
                 birth_date
             ))
             
@@ -396,15 +451,15 @@ class HomePage:
         
         if not search_term:
             # If search is empty, load all data
-            self.search_status.config(text="Showing all records...")
+            self.search_status.config(text=translations.get('showing_all'))
             self.load_dashboard_stats()
-            self.results_label.config(text="📊 Dashboard")
+            self.results_label.config(text=translations.get('dashboard_title'))
             return
             
         try:
             # Update status
-            self.search_status.config(text=f"Searching for '{search_term}'...")
-            self.results_label.config(text=f"🔍 Search Results for '{search_term}'")
+            self.search_status.config(text=f"{translations.get('searching_for')} '{search_term}'...")
+            self.results_label.config(text=f"{translations.get('search_results')} '{search_term}'")
             
             # Search doctors
             doctors = Doctor.search(search_term)
@@ -431,9 +486,14 @@ class HomePage:
             # Update status with results count
             total_results = len(doctors) + len(patients) + len(filtered_records)
             self.search_status.config(
-                text=f"Found {total_results} results: {len(doctors)} doctors, {len(patients)} patients, {len(filtered_records)} records"
+                text=translations.get('found_results', 
+                    total=total_results, 
+                    doctors=len(doctors), 
+                    patients=len(patients), 
+                    records=len(filtered_records)
+                )
             )
             
         except Exception as e:
-            self.search_status.config(text=f"Search error: {str(e)}")
+            self.search_status.config(text=translations.get('search_error', error=str(e)))
             print(f"Search error: {e}")

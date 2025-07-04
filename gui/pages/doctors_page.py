@@ -2,12 +2,17 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from models import Doctor
 from gui.widgets.doctor_form import DoctorForm
+from localization.translations import translations
 
 
 class DoctorsPage:
     def __init__(self, parent):
         self.parent = parent
         self.selected_doctor = None
+        
+        # Register for language change notifications
+        translations.add_observer(self.update_ui)
+        
         self.setup_ui()
         self.load_doctors()
         
@@ -64,8 +69,8 @@ class DoctorsPage:
         header_frame.columnconfigure(1, weight=1)
         
         # Title with better typography
-        title_label = ttk.Label(header_frame, text="👨‍⚕️ Doctors Management", style='Title.TLabel')
-        title_label.grid(row=0, column=0, sticky="w")
+        self.title_label = ttk.Label(header_frame, text=translations.get('doctors_management'), style='Title.TLabel')
+        self.title_label.grid(row=0, column=0, sticky="w")
         
         # Buttons frame with better spacing
         buttons_frame = ttk.Frame(header_frame)
@@ -74,7 +79,7 @@ class DoctorsPage:
         # Add Doctor button with better sizing
         self.add_btn = ttk.Button(
             buttons_frame, 
-            text="➕ Add Doctor", 
+            text=translations.get('add_doctor'), 
             style='Success.TButton',
             command=self.add_doctor
         )
@@ -83,7 +88,7 @@ class DoctorsPage:
         # Edit Doctor button
         self.edit_btn = ttk.Button(
             buttons_frame, 
-            text="✏️ Edit Doctor", 
+            text=translations.get('edit_doctor'), 
             style='Warning.TButton',
             command=self.edit_doctor,
             state='disabled'
@@ -93,7 +98,7 @@ class DoctorsPage:
         # Delete Doctor button
         self.delete_btn = ttk.Button(
             buttons_frame, 
-            text="🗑️ Delete Doctor", 
+            text=translations.get('delete_doctor'), 
             style='Danger.TButton',
             command=self.delete_doctor,
             state='disabled'
@@ -113,8 +118,8 @@ class DoctorsPage:
         search_frame.columnconfigure(1, weight=1)
         
         # Search label and entry with better sizing
-        search_label = ttk.Label(search_frame, text="🔍 Search Doctors:", font=('Segoe UI', 12, 'bold'))
-        search_label.grid(row=0, column=0, sticky="w", padx=(0, 15))
+        self.search_label = ttk.Label(search_frame, text=translations.get('search_doctors'), font=('Segoe UI', 12, 'bold'))
+        self.search_label.grid(row=0, column=0, sticky="w", padx=(0, 15))
         
         self.search_var = tk.StringVar()
         self.search_entry = ttk.Entry(search_frame, textvariable=self.search_var, font=('Segoe UI', 11), width=40)
@@ -132,11 +137,11 @@ class DoctorsPage:
         self.doctors_tree = ttk.Treeview(table_frame, columns=columns, show='headings', height=18)
         
         # Configure columns with better widths
-        self.doctors_tree.heading('ID', text='ID')
-        self.doctors_tree.heading('Name', text='Name')
-        self.doctors_tree.heading('Phone', text='Phone')
-        self.doctors_tree.heading('Created', text='Created')
-        self.doctors_tree.heading('Status', text='Status')
+        self.doctors_tree.heading('ID', text=translations.get('col_id'))
+        self.doctors_tree.heading('Name', text=translations.get('col_name'))
+        self.doctors_tree.heading('Phone', text=translations.get('col_phone'))
+        self.doctors_tree.heading('Created', text=translations.get('col_created'))
+        self.doctors_tree.heading('Status', text=translations.get('col_status'))
         
         self.doctors_tree.column('ID', width=80, anchor='center')
         self.doctors_tree.column('Name', width=250)
@@ -161,6 +166,27 @@ class DoctorsPage:
         # Bind mousewheel to treeview
         self.doctors_tree.bind("<MouseWheel>", self._on_mousewheel)
         
+    def update_ui(self):
+        """Update UI elements when language changes"""
+        # Update header
+        self.title_label.config(text=translations.get('doctors_management'))
+        self.add_btn.config(text=translations.get('add_doctor'))
+        self.edit_btn.config(text=translations.get('edit_doctor'))
+        self.delete_btn.config(text=translations.get('delete_doctor'))
+        
+        # Update search
+        self.search_label.config(text=translations.get('search_doctors'))
+        
+        # Update table headers
+        self.doctors_tree.heading('ID', text=translations.get('col_id'))
+        self.doctors_tree.heading('Name', text=translations.get('col_name'))
+        self.doctors_tree.heading('Phone', text=translations.get('col_phone'))
+        self.doctors_tree.heading('Created', text=translations.get('col_created'))
+        self.doctors_tree.heading('Status', text=translations.get('col_status'))
+        
+        # Reload data to update status translations
+        self.load_doctors()
+        
     def load_doctors(self, search_term=None):
         """Load doctors data into the table"""
         # Clear existing data
@@ -175,7 +201,7 @@ class DoctorsPage:
                 
             for doctor in doctors:
                 created_date = doctor.created_at.strftime("%Y-%m-%d %H:%M") if doctor.created_at else ""
-                status = "Deleted" if doctor.deleted_at else "Active"
+                status = translations.get('status_deleted') if doctor.deleted_at else translations.get('status_active')
                 
                 self.doctors_tree.insert('', 'end', values=(
                     doctor.id,
@@ -190,7 +216,7 @@ class DoctorsPage:
             self.doctors_tree.tag_configure('active', foreground='#27ae60')
             
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to load doctors: {str(e)}")
+            messagebox.showerror(translations.get('error'), f"Failed to load doctors: {str(e)}")
             
     def on_search(self, *args):
         """Handle search input"""
@@ -210,7 +236,7 @@ class DoctorsPage:
             
             # Enable edit and delete buttons
             self.edit_btn.config(state='normal')
-            self.delete_btn.config(state='normal')
+            self.delete_btn.config(state='disabled')
         else:
             self.selected_doctor = None
             self.edit_btn.config(state='disabled')
@@ -223,7 +249,7 @@ class DoctorsPage:
             
     def add_doctor(self):
         """Open add doctor dialog"""
-        dialog = DoctorForm(self.content_frame, title="Add New Doctor")
+        dialog = DoctorForm(self.content_frame, title=translations.get('add_new_doctor'))
         if dialog.result:
             try:
                 Doctor.create(
@@ -231,11 +257,11 @@ class DoctorsPage:
                     phone=dialog.result['phone']
                 )
                 self.load_doctors()
-                messagebox.showinfo("Success", "Doctor added successfully!")
+                messagebox.showinfo(translations.get('success'), "Doctor added successfully!")
             except ValueError as e:
-                messagebox.showerror("Error", str(e))
+                messagebox.showerror(translations.get('error'), str(e))
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to add doctor: {str(e)}")
+                messagebox.showerror(translations.get('error'), f"Failed to add doctor: {str(e)}")
                 
     def edit_doctor(self):
         """Open edit doctor dialog"""
@@ -244,7 +270,7 @@ class DoctorsPage:
             
         dialog = DoctorForm(
             self.content_frame, 
-            title="Edit Doctor",
+            title=translations.get('edit_doctor_title'),
             doctor=self.selected_doctor
         )
         
@@ -256,11 +282,11 @@ class DoctorsPage:
                     phone=dialog.result['phone']
                 )
                 self.load_doctors()
-                messagebox.showinfo("Success", "Doctor updated successfully!")
+                messagebox.showinfo(translations.get('success'), "Doctor updated successfully!")
             except ValueError as e:
-                messagebox.showerror("Error", str(e))
+                messagebox.showerror(translations.get('error'), str(e))
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to update doctor: {str(e)}")
+                messagebox.showerror(translations.get('error'), f"Failed to update doctor: {str(e)}")
                 
     def delete_doctor(self):
         """Delete selected doctor"""
@@ -269,7 +295,7 @@ class DoctorsPage:
             
         # Confirm deletion
         result = messagebox.askyesno(
-            "Confirm Deletion",
+            translations.get('confirm_deletion'),
             f"Are you sure you want to delete Dr. {self.selected_doctor.name}?\n\n"
             "Note: If this doctor has records, they will be soft-deleted (marked as deleted but kept for data integrity)."
         )
@@ -281,6 +307,6 @@ class DoctorsPage:
                 self.selected_doctor = None
                 self.edit_btn.config(state='disabled')
                 self.delete_btn.config(state='disabled')
-                messagebox.showinfo("Success", "Doctor deleted successfully!")
+                messagebox.showinfo(translations.get('success'), "Doctor deleted successfully!")
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to delete doctor: {str(e)}")
+                messagebox.showerror(translations.get('error'), f"Failed to delete doctor: {str(e)}")
