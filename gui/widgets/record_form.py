@@ -9,10 +9,10 @@ class RecordForm:
         self.record = record
         self.result = None
         
-        # Create dialog window
+        # Create dialog window with better size
         self.dialog = tk.Toplevel(parent)
         self.dialog.title(title)
-        self.dialog.geometry("400x300")
+        self.dialog.geometry("500x400")
         self.dialog.resizable(False, False)
         self.dialog.transient(parent)
         self.dialog.grab_set()
@@ -53,7 +53,7 @@ class RecordForm:
         x = parent_x + (parent_width // 2) - (dialog_width // 2)
         y = parent_y + (parent_height // 2) - (dialog_height // 2)
         
-        self.dialog.geometry(f"{dialog_width}x{dialog_height}+{x}+{y}")
+        self.dialog.geometry(f"500x400+{x}+{y}")
         
     def load_data(self):
         """Load doctors and patients data"""
@@ -67,28 +67,29 @@ class RecordForm:
             
     def setup_ui(self):
         # Main frame with padding
-        main_frame = ttk.Frame(self.dialog, padding=20)
+        main_frame = ttk.Frame(self.dialog, padding=30)
         main_frame.pack(fill='both', expand=True)
         
         # Title
         title_text = "Edit Record" if self.record else "Add New Record"
-        title_label = ttk.Label(main_frame, text=title_text, font=('Segoe UI', 14, 'bold'))
-        title_label.pack(pady=(0, 20))
+        title_label = ttk.Label(main_frame, text=title_text, font=('Segoe UI', 16, 'bold'))
+        title_label.pack(pady=(0, 30))
         
         # Form fields frame
         fields_frame = ttk.Frame(main_frame)
-        fields_frame.pack(fill='x', pady=(0, 20))
+        fields_frame.pack(fill='both', expand=True, pady=(0, 30))
         
         # Doctor field
-        doctor_label = ttk.Label(fields_frame, text="Doctor *", font=('Segoe UI', 9, 'bold'))
-        doctor_label.pack(anchor='w', pady=(0, 5))
+        doctor_label = ttk.Label(fields_frame, text="Doctor *", font=('Segoe UI', 11, 'bold'))
+        doctor_label.pack(anchor='w', pady=(0, 8))
         
         self.doctor_var = tk.StringVar()
         self.doctor_combo = ttk.Combobox(
             fields_frame, 
             textvariable=self.doctor_var,
             state='readonly',
-            font=('Segoe UI', 10)
+            font=('Segoe UI', 11),
+            height=10
         )
         
         # Populate doctor combobox
@@ -102,18 +103,19 @@ class RecordForm:
             self.doctor_map[display_text] = doctor.id
             
         self.doctor_combo['values'] = doctor_values
-        self.doctor_combo.pack(fill='x', pady=(0, 15))
+        self.doctor_combo.pack(fill='x', pady=(0, 20), ipady=8)
         
         # Patient field
-        patient_label = ttk.Label(fields_frame, text="Patient *", font=('Segoe UI', 9, 'bold'))
-        patient_label.pack(anchor='w', pady=(0, 5))
+        patient_label = ttk.Label(fields_frame, text="Patient *", font=('Segoe UI', 11, 'bold'))
+        patient_label.pack(anchor='w', pady=(0, 8))
         
         self.patient_var = tk.StringVar()
         self.patient_combo = ttk.Combobox(
             fields_frame, 
             textvariable=self.patient_var,
             state='readonly',
-            font=('Segoe UI', 10)
+            font=('Segoe UI', 11),
+            height=10
         )
         
         # Populate patient combobox
@@ -127,10 +129,13 @@ class RecordForm:
             self.patient_map[display_text] = patient.id
             
         self.patient_combo['values'] = patient_values
-        self.patient_combo.pack(fill='x', pady=(0, 15))
+        self.patient_combo.pack(fill='x', pady=(0, 20), ipady=8)
         
         # Info message
         if not self.doctors or not self.patients:
+            info_frame = ttk.Frame(fields_frame, style='Card.TFrame', padding=15)
+            info_frame.pack(fill='x', pady=(0, 20))
+            
             info_text = "⚠️ "
             if not self.doctors and not self.patients:
                 info_text += "No doctors or patients found. Please add doctors and patients first."
@@ -140,21 +145,21 @@ class RecordForm:
                 info_text += "No patients found. Please add patients first."
                 
             info_label = ttk.Label(
-                fields_frame, 
+                info_frame, 
                 text=info_text,
-                font=('Segoe UI', 9),
+                font=('Segoe UI', 10),
                 foreground='#f39c12',
-                wraplength=350
+                wraplength=400
             )
-            info_label.pack(anchor='w', pady=(0, 10))
+            info_label.pack(anchor='w')
         
         # Required fields note
-        note_label = ttk.Label(fields_frame, text="* Required fields", font=('Segoe UI', 8), foreground='#e74c3c')
-        note_label.pack(anchor='w')
+        note_label = ttk.Label(fields_frame, text="* Required fields", font=('Segoe UI', 9), foreground='#e74c3c')
+        note_label.pack(anchor='w', pady=(10, 0))
         
         # Buttons frame
         buttons_frame = ttk.Frame(main_frame)
-        buttons_frame.pack(fill='x')
+        buttons_frame.pack(fill='x', pady=(20, 0))
         
         # Cancel button
         cancel_btn = ttk.Button(
@@ -163,7 +168,7 @@ class RecordForm:
             command=self.cancel,
             style='TButton'
         )
-        cancel_btn.pack(side='right', padx=(10, 0))
+        cancel_btn.pack(side='right', padx=(15, 0), ipadx=20, ipady=8)
         
         # Save button
         save_text = "Update" if self.record else "Save"
@@ -173,7 +178,7 @@ class RecordForm:
             command=self.save,
             style='Success.TButton'
         )
-        save_btn.pack(side='right')
+        save_btn.pack(side='right', ipadx=20, ipady=8)
         
         # Disable save button if no data
         if not self.doctors or not self.patients:

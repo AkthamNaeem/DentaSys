@@ -12,10 +12,10 @@ class TreatmentForm:
         self.record_id = record_id
         self.result = None
         
-        # Create dialog window
+        # Create dialog window with better size
         self.dialog = tk.Toplevel(parent)
         self.dialog.title(title)
-        self.dialog.geometry("450x400")
+        self.dialog.geometry("550x550")
         self.dialog.resizable(False, False)
         self.dialog.transient(parent)
         self.dialog.grab_set()
@@ -53,44 +53,44 @@ class TreatmentForm:
         x = parent_x + (parent_width // 2) - (dialog_width // 2)
         y = parent_y + (parent_height // 2) - (dialog_height // 2)
         
-        self.dialog.geometry(f"{dialog_width}x{dialog_height}+{x}+{y}")
+        self.dialog.geometry(f"550x550+{x}+{y}")
         
     def setup_ui(self):
         # Main frame with padding
-        main_frame = ttk.Frame(self.dialog, padding=20)
+        main_frame = ttk.Frame(self.dialog, padding=30)
         main_frame.pack(fill='both', expand=True)
         
         # Title
         title_text = "Edit Treatment" if self.treatment else "Add New Treatment"
-        title_label = ttk.Label(main_frame, text=title_text, font=('Segoe UI', 14, 'bold'))
-        title_label.pack(pady=(0, 20))
+        title_label = ttk.Label(main_frame, text=title_text, font=('Segoe UI', 16, 'bold'))
+        title_label.pack(pady=(0, 30))
         
         # Form fields frame
         fields_frame = ttk.Frame(main_frame)
-        fields_frame.pack(fill='both', expand=True, pady=(0, 20))
+        fields_frame.pack(fill='both', expand=True, pady=(0, 30))
         
         # Treatment name field
-        name_label = ttk.Label(fields_frame, text="Treatment Name *", font=('Segoe UI', 9, 'bold'))
-        name_label.pack(anchor='w', pady=(0, 5))
+        name_label = ttk.Label(fields_frame, text="Treatment Name *", font=('Segoe UI', 11, 'bold'))
+        name_label.pack(anchor='w', pady=(0, 8))
         
         self.name_var = tk.StringVar()
-        self.name_entry = ttk.Entry(fields_frame, textvariable=self.name_var, font=('Segoe UI', 10))
-        self.name_entry.pack(fill='x', pady=(0, 15))
+        self.name_entry = ttk.Entry(fields_frame, textvariable=self.name_var, font=('Segoe UI', 11))
+        self.name_entry.pack(fill='x', pady=(0, 20), ipady=8)
         
         # Cost field
-        cost_label = ttk.Label(fields_frame, text="Cost *", font=('Segoe UI', 9, 'bold'))
-        cost_label.pack(anchor='w', pady=(0, 5))
+        cost_label = ttk.Label(fields_frame, text="Cost *", font=('Segoe UI', 11, 'bold'))
+        cost_label.pack(anchor='w', pady=(0, 8))
         
         self.cost_var = tk.StringVar()
-        self.cost_entry = ttk.Entry(fields_frame, textvariable=self.cost_var, font=('Segoe UI', 10))
-        self.cost_entry.pack(fill='x', pady=(0, 15))
+        self.cost_entry = ttk.Entry(fields_frame, textvariable=self.cost_var, font=('Segoe UI', 11))
+        self.cost_entry.pack(fill='x', pady=(0, 20), ipady=8)
         
         # Date field
-        date_label = ttk.Label(fields_frame, text="Treatment Date", font=('Segoe UI', 9, 'bold'))
-        date_label.pack(anchor='w', pady=(0, 5))
+        date_label = ttk.Label(fields_frame, text="Treatment Date", font=('Segoe UI', 11, 'bold'))
+        date_label.pack(anchor='w', pady=(0, 8))
         
         date_frame = ttk.Frame(fields_frame)
-        date_frame.pack(fill='x', pady=(0, 15))
+        date_frame.pack(fill='x', pady=(0, 20))
         
         try:
             # Try to use DateEntry (tkcalendar)
@@ -101,9 +101,9 @@ class TreatmentForm:
                 foreground='white',
                 borderwidth=2,
                 date_pattern='yyyy-mm-dd',
-                font=('Segoe UI', 10)
+                font=('Segoe UI', 11)
             )
-            self.date_entry.pack(fill='x')
+            self.date_entry.pack(fill='x', ipady=8)
             self.has_date_picker = True
         except ImportError:
             # Fallback to regular entry if tkcalendar is not available
@@ -111,31 +111,31 @@ class TreatmentForm:
             self.date_entry = ttk.Entry(
                 date_frame, 
                 textvariable=self.date_var,
-                font=('Segoe UI', 10)
+                font=('Segoe UI', 11)
             )
-            self.date_entry.pack(fill='x')
+            self.date_entry.pack(fill='x', ipady=8)
             
             # Add format hint
             hint_label = ttk.Label(
                 date_frame, 
                 text="Format: YYYY-MM-DD (e.g., 2024-01-15)",
-                font=('Segoe UI', 8),
+                font=('Segoe UI', 9),
                 foreground='#7f8c8d'
             )
-            hint_label.pack(anchor='w', pady=(2, 0))
+            hint_label.pack(anchor='w', pady=(5, 0))
             self.has_date_picker = False
         
         # Notes field
-        notes_label = ttk.Label(fields_frame, text="Notes", font=('Segoe UI', 9, 'bold'))
-        notes_label.pack(anchor='w', pady=(0, 5))
+        notes_label = ttk.Label(fields_frame, text="Notes", font=('Segoe UI', 11, 'bold'))
+        notes_label.pack(anchor='w', pady=(0, 8))
         
         notes_frame = ttk.Frame(fields_frame)
-        notes_frame.pack(fill='both', expand=True, pady=(0, 15))
+        notes_frame.pack(fill='both', expand=True, pady=(0, 20))
         
         self.notes_text = tk.Text(
             notes_frame, 
-            height=4, 
-            font=('Segoe UI', 10),
+            height=6, 
+            font=('Segoe UI', 11),
             wrap='word'
         )
         notes_scrollbar = ttk.Scrollbar(notes_frame, orient='vertical', command=self.notes_text.yview)
@@ -145,12 +145,12 @@ class TreatmentForm:
         notes_scrollbar.pack(side='right', fill='y')
         
         # Required fields note
-        note_label = ttk.Label(fields_frame, text="* Required fields", font=('Segoe UI', 8), foreground='#e74c3c')
-        note_label.pack(anchor='w')
+        note_label = ttk.Label(fields_frame, text="* Required fields", font=('Segoe UI', 9), foreground='#e74c3c')
+        note_label.pack(anchor='w', pady=(10, 0))
         
         # Buttons frame
         buttons_frame = ttk.Frame(main_frame)
-        buttons_frame.pack(fill='x')
+        buttons_frame.pack(fill='x', pady=(20, 0))
         
         # Cancel button
         cancel_btn = ttk.Button(
@@ -159,7 +159,7 @@ class TreatmentForm:
             command=self.cancel,
             style='TButton'
         )
-        cancel_btn.pack(side='right', padx=(10, 0))
+        cancel_btn.pack(side='right', padx=(15, 0), ipadx=20, ipady=8)
         
         # Save button
         save_text = "Update" if self.treatment else "Save"
@@ -169,7 +169,7 @@ class TreatmentForm:
             command=self.save,
             style='Success.TButton'
         )
-        save_btn.pack(side='right')
+        save_btn.pack(side='right', ipadx=20, ipady=8)
         
         # Bind Enter key to save (only for single-line entries)
         self.name_entry.bind('<Return>', lambda e: self.save())
