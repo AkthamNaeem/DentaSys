@@ -15,7 +15,7 @@ class PatientForm:
         self.dialog = tk.Toplevel(parent)
         self.dialog.title(title)
         self.dialog.geometry("550x650")
-        self.dialog.resizable(False, False)
+        self.dialog.resizable(True, True)
         self.dialog.transient(parent)
         self.dialog.grab_set()
         
