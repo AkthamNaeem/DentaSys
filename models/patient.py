@@ -1,6 +1,7 @@
 import sqlite3
 from database.connection import get_db_connection
 from models.helper import handle_date_time, handle_date
+from datetime import date
 
 
 class Patient:
@@ -151,7 +152,7 @@ class Patient:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM patients WHERE name LIKE ? OR phone LIKE ?",
+                "SELECT * FROM patients WHERE (name LIKE ? OR phone LIKE ?) AND deleted_at IS NULL",
                 (f"%{search_term}%", f"%{search_term}%")
             )
             return [cls(**row) for row in cursor.fetchall()]
@@ -237,3 +238,14 @@ class Patient:
             return results
         finally:
             conn.close()
+
+    @property
+    def age(self):
+        if self.birth_date is None:
+            return None
+        today = date.today()
+        try:
+            birthday_passed = (today.month, today.day) >= (self.birth_date.month, self.birth_date.day)
+            return today.year - self.birth_date.year - (0 if birthday_passed else 1)
+        except Exception:
+            return None

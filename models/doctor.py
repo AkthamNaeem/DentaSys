@@ -131,7 +131,7 @@ class Doctor:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM doctors WHERE name LIKE ? OR phone LIKE ?",
+                "SELECT * FROM doctors WHERE (name LIKE ? OR phone LIKE ?) AND deleted_at IS NULL",
                 (f"%{search_term}%", f"%{search_term}%")
             )
             return [cls(**row) for row in cursor.fetchall()]

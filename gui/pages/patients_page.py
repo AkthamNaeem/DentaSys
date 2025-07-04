@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from models import Patient
 from gui.widgets.patient_form import PatientForm
+from localization.translations import translations
 
 
 class PatientsPage:
@@ -64,7 +65,7 @@ class PatientsPage:
         header_frame.columnconfigure(1, weight=1)
         
         # Title with better typography
-        title_label = ttk.Label(header_frame, text="👤 Patients Management", style='Title.TLabel')
+        title_label = ttk.Label(header_frame, text=translations.get('patients_management'), style='Title.TLabel')
         title_label.grid(row=0, column=0, sticky="w")
         
         # Buttons frame with better spacing
@@ -74,7 +75,7 @@ class PatientsPage:
         # Add Patient button with better sizing
         self.add_btn = ttk.Button(
             buttons_frame, 
-            text="➕ Add Patient", 
+            text=translations.get('add_patient'),
             style='Success.TButton',
             command=self.add_patient
         )
@@ -83,7 +84,7 @@ class PatientsPage:
         # Edit Patient button
         self.edit_btn = ttk.Button(
             buttons_frame, 
-            text="✏️ Edit Patient", 
+            text=translations.get('edit_patient'),
             style='Warning.TButton',
             command=self.edit_patient,
             state='disabled'
@@ -93,7 +94,7 @@ class PatientsPage:
         # Delete Patient button
         self.delete_btn = ttk.Button(
             buttons_frame, 
-            text="🗑️ Delete Patient", 
+            text=translations.get('delete_patient'),
             style='Danger.TButton',
             command=self.delete_patient,
             state='disabled'
@@ -113,7 +114,7 @@ class PatientsPage:
         search_frame.columnconfigure(1, weight=1)
         
         # Search label and entry with better sizing
-        search_label = ttk.Label(search_frame, text="🔍 Search Patients:", font=('Segoe UI', 12, 'bold'))
+        search_label = ttk.Label(search_frame, text=translations.get('search_patients'), font=('Segoe UI', 12, 'bold'))
         search_label.grid(row=0, column=0, sticky="w", padx=(0, 15))
         
         self.search_var = tk.StringVar()
@@ -128,22 +129,24 @@ class PatientsPage:
         table_frame.rowconfigure(0, weight=1)
         
         # Patients table with better height
-        columns = ('ID', 'Name', 'Phone', 'Gender', 'Birth Date', 'Created', 'Status')
+        columns = ('ID', 'Name', 'Phone', 'Gender', 'Age', 'Birth Date', 'Created', 'Status')
         self.patients_tree = ttk.Treeview(table_frame, columns=columns, show='headings', height=18)
         
         # Configure columns with better widths
-        self.patients_tree.heading('ID', text='ID')
-        self.patients_tree.heading('Name', text='Name')
-        self.patients_tree.heading('Phone', text='Phone')
-        self.patients_tree.heading('Gender', text='Gender')
-        self.patients_tree.heading('Birth Date', text='Birth Date')
-        self.patients_tree.heading('Created', text='Created')
-        self.patients_tree.heading('Status', text='Status')
+        self.patients_tree.heading('ID', text=translations.get('col_id'))
+        self.patients_tree.heading('Name', text=translations.get('col_name'))
+        self.patients_tree.heading('Phone', text=translations.get('col_phone'))
+        self.patients_tree.heading('Gender', text=translations.get('col_gender'))
+        self.patients_tree.heading('Age', text=translations.get('col_age'))
+        self.patients_tree.heading('Birth Date', text=translations.get('col_birth_date'))
+        self.patients_tree.heading('Created', text=translations.get('col_created'))
+        self.patients_tree.heading('Status', text=translations.get('col_status'))
         
         self.patients_tree.column('ID', width=80, anchor='center')
         self.patients_tree.column('Name', width=220)
         self.patients_tree.column('Phone', width=160)
         self.patients_tree.column('Gender', width=100, anchor='center')
+        self.patients_tree.column('Age', width=100, anchor='center')
         self.patients_tree.column('Birth Date', width=120, anchor='center')
         self.patients_tree.column('Created', width=160, anchor='center')
         self.patients_tree.column('Status', width=100, anchor='center')
@@ -187,6 +190,7 @@ class PatientsPage:
                     patient.name,
                     patient.phone or "",
                     patient.gender or "",
+                    patient.age or "",
                     birth_date,
                     created_date,
                     status

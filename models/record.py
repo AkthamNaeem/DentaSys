@@ -48,7 +48,13 @@ class Record:
     def get_by_id(cls, record_id):
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM records WHERE id = ?", (record_id,))
+        cursor.execute("""
+            SELECT r.*, d.name as doctor_name, p.name as patient_name 
+            FROM records r
+            JOIN doctors d ON r.doctor_id = d.id
+            JOIN patients p ON r.patient_id = p.id
+            WHERE id = ?
+            """, (record_id,))
         record_data = cursor.fetchone()
         conn.close()
         if record_data:

@@ -70,6 +70,7 @@ class Translations:
                 'col_name': 'Name',
                 'col_phone': 'Phone',
                 'col_gender': 'Gender',
+                'col_age': 'Age',
                 'col_birth_date': 'Birth Date',
                 'col_created': 'Created',
                 'col_status': 'Status',
