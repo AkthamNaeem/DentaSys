@@ -512,7 +512,7 @@ class RecordDetailsWindow:
                 title=translations.get('save_pdf'),
                 defaultextension=".pdf",
                 filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")],
-                initialname=f"Record_{self.record.doctor_name}_{self.record.patient_name}_{datetime.now().strftime('%Y%m%d')}.pdf"
+                initialfile=f"Record_{self.record.doctor_name}_{self.record.patient_name}_{datetime.now().strftime('%Y%m%d')}.pdf"
             )
             
             if not filename:
