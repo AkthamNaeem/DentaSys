@@ -142,6 +142,8 @@ class Translations:
                 
                 # Record Details
                 'record_details': '📋 Record Details',
+                'record_information': 'Record Information',
+                'record_id': 'Record ID',
                 'treatments_tab': '🦷 Treatments',
                 'payments_tab': '💰 Payments',
                 'add_treatment': '➕ Add Treatment',
@@ -154,6 +156,14 @@ class Translations:
                 'total_cost': 'Total Cost',
                 'total_paid': 'Total Paid',
                 'balance': 'Balance',
+                'unknown': 'Unknown',
+                
+                # PDF Export
+                'export_pdf': 'Export PDF',
+                'save_pdf': 'Save PDF Report',
+                'pdf_exported_success': 'PDF report "{filename}" exported successfully!',
+                'pdf_export_error': 'Failed to export PDF: {error}',
+                'generated_on': 'Generated on',
                 
                 # Form Titles
                 'add_new_doctor': 'Add New Doctor',
@@ -343,6 +353,8 @@ class Translations:
                 
                 # Record Details
                 'record_details': '📋 تفاصيل السجل',
+                'record_information': 'معلومات السجل',
+                'record_id': 'رقم السجل',
                 'treatments_tab': '🦷 العلاجات',
                 'payments_tab': '💰 المدفوعات',
                 'add_treatment': '➕ إضافة علاج',
@@ -355,6 +367,14 @@ class Translations:
                 'total_cost': 'التكلفة الإجمالية',
                 'total_paid': 'المبلغ المدفوع',
                 'balance': 'الرصيد',
+                'unknown': 'غير معروف',
+                
+                # PDF Export
+                'export_pdf': 'تصدير PDF',
+                'save_pdf': 'حفظ تقرير PDF',
+                'pdf_exported_success': 'تم تصدير تقرير PDF "{filename}" بنجاح!',
+                'pdf_export_error': 'فشل في تصدير PDF: {error}',
+                'generated_on': 'تم الإنشاء في',
                 
                 # Form Titles
                 'add_new_doctor': 'إضافة طبيب جديد',
