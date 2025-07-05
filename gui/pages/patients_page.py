@@ -9,6 +9,10 @@ class PatientsPage:
     def __init__(self, parent):
         self.parent = parent
         self.selected_patient = None
+        
+        # Register for language change notifications
+        translations.add_observer(self.update_ui)
+        
         self.setup_ui()
         self.load_patients()
         
@@ -65,8 +69,8 @@ class PatientsPage:
         header_frame.columnconfigure(1, weight=1)
         
         # Title with better typography
-        title_label = ttk.Label(header_frame, text=translations.get('patients_management'), style='Title.TLabel')
-        title_label.grid(row=0, column=0, sticky="w")
+        self.title_label = ttk.Label(header_frame, text=translations.get('patients_management'), style='Title.TLabel')
+        self.title_label.grid(row=0, column=0, sticky="w")
         
         # Buttons frame with better spacing
         buttons_frame = ttk.Frame(header_frame)
@@ -114,8 +118,8 @@ class PatientsPage:
         search_frame.columnconfigure(1, weight=1)
         
         # Search label and entry with better sizing
-        search_label = ttk.Label(search_frame, text=translations.get('search_patients'), font=('Segoe UI', 12, 'bold'))
-        search_label.grid(row=0, column=0, sticky="w", padx=(0, 15))
+        self.search_label = ttk.Label(search_frame, text=translations.get('search_patients'), font=('Segoe UI', 12, 'bold'))
+        self.search_label.grid(row=0, column=0, sticky="w", padx=(0, 15))
         
         self.search_var = tk.StringVar()
         self.search_entry = ttk.Entry(search_frame, textvariable=self.search_var, font=('Segoe UI', 11), width=40)
@@ -177,6 +181,26 @@ class PatientsPage:
         # Bind mousewheel to treeview
         self.patients_tree.bind("<MouseWheel>", self._on_mousewheel)
         
+    def update_ui(self):
+        """Update UI elements when language changes"""
+        # Update header
+        self.title_label.config(text=translations.get('patients_management'))
+        self.add_btn.config(text=translations.get('add_patient'))
+        self.edit_btn.config(text=translations.get('edit_patient'))
+        self.delete_btn.config(text=translations.get('delete_patient'))
+        
+        # Update search
+        self.search_label.config(text=translations.get('search_patients'))
+        
+        # Update table headers
+        self.patients_tree.heading('Name', text=translations.get('col_name'))
+        self.patients_tree.heading('Phone', text=translations.get('col_phone'))
+        self.patients_tree.heading('Gender', text=translations.get('col_gender'))
+        self.patients_tree.heading('Age', text=translations.get('col_age'))
+        
+        # Reload data to update gender translations
+        self.load_patients()
+        
     def load_patients(self, search_term=None):
         """Load patients data into the table"""
         # Clear existing data
@@ -192,25 +216,30 @@ class PatientsPage:
             for patient in patients:
                 created_date = patient.created_at.strftime("%Y-%m-%d %H:%M") if patient.created_at else ""
                 birth_date = patient.birth_date.strftime("%Y-%m-%d") if patient.birth_date else ""
-                status = "Deleted" if patient.deleted_at else "Active"
+                status = translations.get('status_deleted') if patient.deleted_at else translations.get('status_active')
+                
+                # Translate gender
+                gender_text = ""
+                if patient.gender:
+                    gender_text = translations.get('gender_male') if patient.gender == 'Male' else translations.get('gender_female')
                 
                 self.patients_tree.insert('', 'end', values=(
                     # patient.id,
                     patient.name,
                     patient.phone or "",
-                    patient.gender or "",
+                    gender_text,
                     patient.age or "",
                     # birth_date,
                     # created_date,
                     # status
-                ))
+                ), tags=(status.lower(),))
                 
             # Configure tags for visual feedback
             self.patients_tree.tag_configure('deleted', foreground='#e74c3c')
             self.patients_tree.tag_configure('active', foreground='#27ae60')
             
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to load patients: {str(e)}")
+            messagebox.showerror(translations.get('error'), translations.get('failed_to_load', item='patients', error=str(e)))
             
     def on_search(self, *args):
         """Handle search input"""
@@ -225,8 +254,10 @@ class PatientsPage:
         selection = self.patients_tree.selection()
         if selection:
             item = self.patients_tree.item(selection[0])
-            patient_id = item['values'][0]
-            self.selected_patient = Patient.get_by_id(patient_id)
+            patient_name = item['values'][0]  # Since we removed ID, name is first
+            # Find patient by name (this is not ideal, but works for now)
+            all_patients = Patient.get_all()
+            self.selected_patient = next((p for p in all_patients if p.name == patient_name), None)
             
             # Enable edit and delete buttons
             self.edit_btn.config(state='normal')
@@ -243,7 +274,7 @@ class PatientsPage:
             
     def add_patient(self):
         """Open add patient dialog"""
-        dialog = PatientForm(self.content_frame, title="Add New Patient")
+        dialog = PatientForm(self.content_frame, title=translations.get('add_new_patient'))
         if dialog.result:
             try:
                 Patient.create(
@@ -254,11 +285,11 @@ class PatientsPage:
                     notes=dialog.result['notes']
                 )
                 self.load_patients()
-                messagebox.showinfo("Success", "Patient added successfully!")
+                messagebox.showinfo(translations.get('success'), translations.get('patient_added_success'))
             except ValueError as e:
-                messagebox.showerror("Error", str(e))
+                messagebox.showerror(translations.get('error'), str(e))
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to add patient: {str(e)}")
+                messagebox.showerror(translations.get('error'), translations.get('failed_to_add', item='patient', error=str(e)))
                 
     def edit_patient(self):
         """Open edit patient dialog"""
@@ -267,7 +298,7 @@ class PatientsPage:
             
         dialog = PatientForm(
             self.content_frame, 
-            title="Edit Patient",
+            title=translations.get('edit_patient_title'),
             patient=self.selected_patient
         )
         
@@ -282,11 +313,11 @@ class PatientsPage:
                     notes=dialog.result['notes']
                 )
                 self.load_patients()
-                messagebox.showinfo("Success", "Patient updated successfully!")
+                messagebox.showinfo(translations.get('success'), translations.get('patient_updated_success'))
             except ValueError as e:
-                messagebox.showerror("Error", str(e))
+                messagebox.showerror(translations.get('error'), str(e))
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to update patient: {str(e)}")
+                messagebox.showerror(translations.get('error'), translations.get('failed_to_update', item='patient', error=str(e)))
                 
     def delete_patient(self):
         """Delete selected patient"""
@@ -295,9 +326,8 @@ class PatientsPage:
             
         # Confirm deletion
         result = messagebox.askyesno(
-            "Confirm Deletion",
-            f"Are you sure you want to delete {self.selected_patient.name}?\n\n"
-            "Note: If this patient has records, they will be soft-deleted (marked as deleted but kept for data integrity)."
+            translations.get('confirm_deletion'),
+            translations.get('confirm_delete_patient', name=self.selected_patient.name)
         )
         
         if result:
@@ -307,6 +337,6 @@ class PatientsPage:
                 self.selected_patient = None
                 self.edit_btn.config(state='disabled')
                 self.delete_btn.config(state='disabled')
-                messagebox.showinfo("Success", "Patient deleted successfully!")
+                messagebox.showinfo(translations.get('success'), translations.get('patient_deleted_success'))
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to delete patient: {str(e)}")
+                messagebox.showerror(translations.get('error'), translations.get('failed_to_delete', item='patient', error=str(e)))

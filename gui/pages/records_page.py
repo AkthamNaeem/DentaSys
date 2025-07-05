@@ -3,12 +3,17 @@ from tkinter import ttk, messagebox
 from models import Record, Doctor, Patient, Treatment, Payment
 from gui.widgets.record_form import RecordForm
 from gui.widgets.record_details import RecordDetailsWindow
+from localization.translations import translations
 
 
 class RecordsPage:
     def __init__(self, parent):
         self.parent = parent
         self.selected_record = None
+        
+        # Register for language change notifications
+        translations.add_observer(self.update_ui)
+        
         self.setup_ui()
         self.load_records()
         
@@ -65,8 +70,8 @@ class RecordsPage:
         header_frame.columnconfigure(1, weight=1)
         
         # Title with better typography
-        title_label = ttk.Label(header_frame, text="📋 Records Management", style='Title.TLabel')
-        title_label.grid(row=0, column=0, sticky="w")
+        self.title_label = ttk.Label(header_frame, text=translations.get('records_management'), style='Title.TLabel')
+        self.title_label.grid(row=0, column=0, sticky="w")
         
         # Buttons frame with better spacing
         buttons_frame = ttk.Frame(header_frame)
@@ -75,7 +80,7 @@ class RecordsPage:
         # Add Record button with better sizing
         self.add_btn = ttk.Button(
             buttons_frame, 
-            text="➕ Add Record", 
+            text=translations.get('add_record'), 
             style='Success.TButton',
             command=self.add_record
         )
@@ -84,7 +89,7 @@ class RecordsPage:
         # View Details button
         self.view_btn = ttk.Button(
             buttons_frame, 
-            text="👁️ View Details", 
+            text=translations.get('view_details'), 
             style='Warning.TButton',
             command=self.view_record_details,
             state='disabled'
@@ -94,7 +99,7 @@ class RecordsPage:
         # Delete Record button
         self.delete_btn = ttk.Button(
             buttons_frame, 
-            text="🗑️ Delete Record", 
+            text=translations.get('delete_record'), 
             style='Danger.TButton',
             command=self.delete_record,
             state='disabled'
@@ -114,8 +119,8 @@ class RecordsPage:
         search_frame.columnconfigure(1, weight=1)
         
         # Search label and entry with better sizing
-        search_label = ttk.Label(search_frame, text="🔍 Search Records:", font=('Segoe UI', 12, 'bold'))
-        search_label.grid(row=0, column=0, sticky="w", padx=(0, 15))
+        self.search_label = ttk.Label(search_frame, text=translations.get('search_records'), font=('Segoe UI', 12, 'bold'))
+        self.search_label.grid(row=0, column=0, sticky="w", padx=(0, 15))
         
         self.search_var = tk.StringVar()
         self.search_entry = ttk.Entry(search_frame, textvariable=self.search_var, font=('Segoe UI', 11), width=40)
@@ -133,13 +138,13 @@ class RecordsPage:
         self.records_tree = ttk.Treeview(table_frame, columns=columns, show='headings', height=18)
         
         # Configure columns with better widths
-        self.records_tree.heading('ID', text='ID')
-        self.records_tree.heading('Doctor', text='Doctor')
-        self.records_tree.heading('Patient', text='Patient')
-        self.records_tree.heading('Total Cost', text='Total Cost')
-        self.records_tree.heading('Total Paid', text='Total Paid')
-        self.records_tree.heading('Balance', text='Balance')
-        self.records_tree.heading('Created', text='Created')
+        self.records_tree.heading('ID', text=translations.get('col_id'))
+        self.records_tree.heading('Doctor', text=translations.get('col_doctor'))
+        self.records_tree.heading('Patient', text=translations.get('col_patient'))
+        self.records_tree.heading('Total Cost', text=translations.get('col_total_cost'))
+        self.records_tree.heading('Total Paid', text=translations.get('col_total_paid'))
+        self.records_tree.heading('Balance', text=translations.get('col_balance'))
+        self.records_tree.heading('Created', text=translations.get('col_created'))
         
         self.records_tree.column('ID', width=80, anchor='center')
         self.records_tree.column('Doctor', width=180)
@@ -165,6 +170,26 @@ class RecordsPage:
         
         # Bind mousewheel to treeview
         self.records_tree.bind("<MouseWheel>", self._on_mousewheel)
+        
+    def update_ui(self):
+        """Update UI elements when language changes"""
+        # Update header
+        self.title_label.config(text=translations.get('records_management'))
+        self.add_btn.config(text=translations.get('add_record'))
+        self.view_btn.config(text=translations.get('view_details'))
+        self.delete_btn.config(text=translations.get('delete_record'))
+        
+        # Update search
+        self.search_label.config(text=translations.get('search_records'))
+        
+        # Update table headers
+        self.records_tree.heading('ID', text=translations.get('col_id'))
+        self.records_tree.heading('Doctor', text=translations.get('col_doctor'))
+        self.records_tree.heading('Patient', text=translations.get('col_patient'))
+        self.records_tree.heading('Total Cost', text=translations.get('col_total_cost'))
+        self.records_tree.heading('Total Paid', text=translations.get('col_total_paid'))
+        self.records_tree.heading('Balance', text=translations.get('col_balance'))
+        self.records_tree.heading('Created', text=translations.get('col_created'))
         
     def load_records(self, search_term=None):
         """Load records data into the table"""
@@ -216,7 +241,7 @@ class RecordsPage:
             self.records_tree.tag_configure('no_treatments', foreground='#7f8c8d')  # Gray for no treatments
             
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to load records: {str(e)}")
+            messagebox.showerror(translations.get('error'), translations.get('failed_to_load', item='records', error=str(e)))
             
     def on_search(self, *args):
         """Handle search input"""
@@ -249,7 +274,7 @@ class RecordsPage:
             
     def add_record(self):
         """Open add record dialog"""
-        dialog = RecordForm(self.content_frame, title="Add New Record")
+        dialog = RecordForm(self.content_frame, title=translations.get('add_new_record'))
         if dialog.result:
             try:
                 Record.create(
@@ -257,11 +282,11 @@ class RecordsPage:
                     patient_id=dialog.result['patient_id']
                 )
                 self.load_records()
-                messagebox.showinfo("Success", "Record added successfully!")
+                messagebox.showinfo(translations.get('success'), translations.get('record_added_success'))
             except ValueError as e:
-                messagebox.showerror("Error", str(e))
+                messagebox.showerror(translations.get('error'), str(e))
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to add record: {str(e)}")
+                messagebox.showerror(translations.get('error'), translations.get('failed_to_add', item='record', error=str(e)))
                 
     def view_record_details(self):
         """Open record details window"""
@@ -283,19 +308,17 @@ class RecordsPage:
         
         if has_treatments or has_payments:
             messagebox.showerror(
-                "Cannot Delete",
-                "This record cannot be deleted because it has associated treatments or payments.\n\n"
-                "Please remove all treatments and payments first."
+                translations.get('cannot_delete'),
+                translations.get('cannot_delete_record')
             )
             return
             
         # Confirm deletion
         result = messagebox.askyesno(
-            "Confirm Deletion",
-            f"Are you sure you want to delete this record?\n\n"
-            f"Doctor: {self.selected_record.doctor_name}\n"
-            f"Patient: {self.selected_record.patient_name}\n\n"
-            "This action cannot be undone."
+            translations.get('confirm_deletion'),
+            translations.get('confirm_delete_record', 
+                doctor=self.selected_record.doctor_name,
+                patient=self.selected_record.patient_name)
         )
         
         if result:
@@ -305,6 +328,6 @@ class RecordsPage:
                 self.selected_record = None
                 self.view_btn.config(state='disabled')
                 self.delete_btn.config(state='disabled')
-                messagebox.showinfo("Success", "Record deleted successfully!")
+                messagebox.showinfo(translations.get('success'), translations.get('record_deleted_success'))
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to delete record: {str(e)}")
+                messagebox.showerror(translations.get('error'), translations.get('failed_to_delete', item='record', error=str(e)))

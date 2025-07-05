@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 from tkcalendar import DateEntry
 from datetime import datetime, date
 import re
+from localization.translations import translations
 
 
 class PatientForm:
@@ -55,62 +56,62 @@ class PatientForm:
         x = 100
         y = 100
 
-        self.dialog.geometry(f"300x600+{x}+{y}")
+        self.dialog.geometry(f"550x650+{x}+{y}")
         
     def setup_ui(self):
         # Main frame with padding
-        main_frame = ttk.Frame(self.dialog, padding=15)
+        main_frame = ttk.Frame(self.dialog, padding=30)
         main_frame.pack(fill='both', expand=True)
         
         # Title
-        title_text = "Edit Patient" if self.patient else "Add New Patient"
+        title_text = translations.get('edit_patient_title') if self.patient else translations.get('add_new_patient')
         title_label = ttk.Label(main_frame, text=title_text, font=('Segoe UI', 16, 'bold'))
-        title_label.pack(pady=(0, 10))
+        title_label.pack(pady=(0, 30))
         
         # Form fields frame
         fields_frame = ttk.Frame(main_frame)
-        fields_frame.pack(fill='both', expand=True, pady=(0, 0))
+        fields_frame.pack(fill='both', expand=True, pady=(0, 30))
         
         # Name field
-        name_label = ttk.Label(fields_frame, text="Patient Name *", font=('Segoe UI', 11, 'bold'))
-        name_label.pack(anchor='w', pady=(0, 5))
+        name_label = ttk.Label(fields_frame, text=translations.get('patient_name_required'), font=('Segoe UI', 11, 'bold'))
+        name_label.pack(anchor='w', pady=(0, 8))
         
         self.name_var = tk.StringVar()
         self.name_entry = ttk.Entry(fields_frame, textvariable=self.name_var, font=('Segoe UI', 11))
-        self.name_entry.pack(fill='x', pady=(0, 10), ipady=8)
+        self.name_entry.pack(fill='x', pady=(0, 20), ipady=8)
         
         # Phone field
-        phone_label = ttk.Label(fields_frame, text="Phone Number *", font=('Segoe UI', 11, 'bold'))
-        phone_label.pack(anchor='w', pady=(0, 5))
+        phone_label = ttk.Label(fields_frame, text=translations.get('phone_number_required'), font=('Segoe UI', 11, 'bold'))
+        phone_label.pack(anchor='w', pady=(0, 8))
         
         self.phone_var = tk.StringVar()
         self.phone_entry = ttk.Entry(fields_frame, textvariable=self.phone_var, font=('Segoe UI', 11))
-        self.phone_entry.pack(fill='x', pady=(0, 10), ipady=8)
+        self.phone_entry.pack(fill='x', pady=(0, 20), ipady=8)
         
         # Gender field
-        gender_label = ttk.Label(fields_frame, text="Gender", font=('Segoe UI', 11, 'bold'))
-        gender_label.pack(anchor='w', pady=(0, 5))
+        gender_label = ttk.Label(fields_frame, text=translations.get('gender'), font=('Segoe UI', 11, 'bold'))
+        gender_label.pack(anchor='w', pady=(0, 8))
         
         self.gender_var = tk.StringVar()
         gender_frame = ttk.Frame(fields_frame)
-        gender_frame.pack(fill='x', pady=(0, 10))
+        gender_frame.pack(fill='x', pady=(0, 20))
         
         self.gender_combo = ttk.Combobox(
             gender_frame, 
             textvariable=self.gender_var,
-            values=['Male', 'Female'],
+            values=[translations.get('gender_male'), translations.get('gender_female')],
             state='readonly',
             font=('Segoe UI', 11),
             height=5
         )
-        self.gender_combo.pack(fill='x', ipady=0)
+        self.gender_combo.pack(fill='x', ipady=8)
         
         # Birth date field
-        birth_date_label = ttk.Label(fields_frame, text="Birth Date", font=('Segoe UI', 11, 'bold'))
-        birth_date_label.pack(anchor='w', pady=(0, 5))
+        birth_date_label = ttk.Label(fields_frame, text=translations.get('birth_date'), font=('Segoe UI', 11, 'bold'))
+        birth_date_label.pack(anchor='w', pady=(0, 8))
         
         birth_date_frame = ttk.Frame(fields_frame)
-        birth_date_frame.pack(fill='x', pady=(0, 10))
+        birth_date_frame.pack(fill='x', pady=(0, 20))
         
         try:
             # Try to use DateEntry (tkcalendar)
@@ -123,7 +124,7 @@ class PatientForm:
                 date_pattern='yyyy-mm-dd',
                 font=('Segoe UI', 11)
             )
-            self.birth_date_entry.pack(fill='x', ipady=0)
+            self.birth_date_entry.pack(fill='x', ipady=8)
             self.has_date_picker = True
         except ImportError:
             # Fallback to regular entry if tkcalendar is not available
@@ -133,24 +134,24 @@ class PatientForm:
                 textvariable=self.birth_date_var,
                 font=('Segoe UI', 11)
             )
-            self.birth_date_entry.pack(fill='x', ipady=0)
+            self.birth_date_entry.pack(fill='x', ipady=8)
             
             # Add format hint
             hint_label = ttk.Label(
                 birth_date_frame, 
-                text="Format: YYYY-MM-DD (e.g., 1990-01-15)",
+                text=translations.get('birth_date_format_hint'),
                 font=('Segoe UI', 9),
                 foreground='#7f8c8d'
             )
-            hint_label.pack(anchor='w', pady=(0, 0))
+            hint_label.pack(anchor='w', pady=(5, 0))
             self.has_date_picker = False
         
         # Notes field
-        notes_label = ttk.Label(fields_frame, text="Notes", font=('Segoe UI', 11, 'bold'))
-        notes_label.pack(anchor='w', pady=(0, 5))
+        notes_label = ttk.Label(fields_frame, text=translations.get('notes'), font=('Segoe UI', 11, 'bold'))
+        notes_label.pack(anchor='w', pady=(0, 8))
         
         notes_frame = ttk.Frame(fields_frame)
-        notes_frame.pack(fill='both', expand=True, pady=(0, 10))
+        notes_frame.pack(fill='both', expand=True, pady=(0, 20))
         
         self.notes_text = tk.Text(
             notes_frame, 
@@ -165,24 +166,24 @@ class PatientForm:
         notes_scrollbar.pack(side='right', fill='y')
         
         # Required fields note
-        note_label = ttk.Label(fields_frame, text="* Required fields", font=('Segoe UI', 9), foreground='#e74c3c')
-        note_label.pack(anchor='w', pady=(0, 10))
+        note_label = ttk.Label(fields_frame, text=translations.get('required_fields'), font=('Segoe UI', 9), foreground='#e74c3c')
+        note_label.pack(anchor='w', pady=(10, 0))
         
         # Buttons frame
         buttons_frame = ttk.Frame(main_frame)
-        buttons_frame.pack(fill='x', pady=(0, 0))
+        buttons_frame.pack(fill='x', pady=(20, 0))
         
         # Cancel button
         cancel_btn = ttk.Button(
             buttons_frame, 
-            text="Cancel", 
+            text=translations.get('btn_cancel'), 
             command=self.cancel,
             style='TButton'
         )
         cancel_btn.pack(side='right', padx=(15, 0), ipadx=20, ipady=8)
         
         # Save button
-        save_text = "Update" if self.patient else "Save"
+        save_text = translations.get('btn_update') if self.patient else translations.get('btn_save')
         save_btn = ttk.Button(
             buttons_frame, 
             text=save_text, 
@@ -201,7 +202,13 @@ class PatientForm:
         if self.patient:
             self.name_var.set(self.patient.name or "")
             self.phone_var.set(self.patient.phone or "")
-            self.gender_var.set(self.patient.gender or "")
+            
+            # Set gender with translation
+            if self.patient.gender:
+                if self.patient.gender == 'Male':
+                    self.gender_var.set(translations.get('gender_male'))
+                elif self.patient.gender == 'Female':
+                    self.gender_var.set(translations.get('gender_female'))
             
             # Set birth date
             if self.patient.birth_date:
@@ -221,7 +228,7 @@ class PatientForm:
         # Validate name
         name = self.name_var.get().strip()
         if not name:
-            errors.append("Patient name is required")
+            errors.append(translations.get('patient_name_required_msg'))
         elif len(name) < 2:
             errors.append("Patient name must be at least 2 characters")
         elif len(name) > 100:
@@ -230,7 +237,7 @@ class PatientForm:
         # Validate phone
         phone = self.phone_var.get().strip()
         if not phone:
-            errors.append("Phone number is required")
+            errors.append(translations.get('phone_required_msg'))
         else:
             # Remove common phone formatting characters
             phone_clean = re.sub(r'[^\d+]', '', phone)
@@ -267,13 +274,21 @@ class PatientForm:
         # Validate form
         errors = self.validate_form()
         if errors:
-            messagebox.showerror("Validation Error", "\n".join(errors))
+            messagebox.showerror(translations.get('validation_error'), "\n".join(errors))
             return
             
         # Prepare data
         name = self.name_var.get().strip()
         phone = self.phone_var.get().strip()
-        gender = self.gender_var.get() or None
+        
+        # Convert gender back to English for storage
+        gender_selection = self.gender_var.get()
+        gender = None
+        if gender_selection == translations.get('gender_male'):
+            gender = 'Male'
+        elif gender_selection == translations.get('gender_female'):
+            gender = 'Female'
+            
         notes = self.notes_text.get('1.0', 'end-1c').strip() or None
         
         # Get birth date

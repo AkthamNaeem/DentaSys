@@ -112,6 +112,12 @@ class Translations:
                 'payment_date': 'Payment Date',
                 'required_fields': '* Required fields',
                 'optional_field': '(Optional)',
+                'birth_date': 'Birth Date',
+                'notes': 'Notes',
+                'gender': 'Gender',
+                'cost': 'Cost',
+                'amount': 'Amount',
+                'date': 'Date',
                 
                 # Messages
                 'success': 'Success',
@@ -119,6 +125,20 @@ class Translations:
                 'validation_error': 'Validation Error',
                 'confirm_deletion': 'Confirm Deletion',
                 'cannot_delete': 'Cannot Delete',
+                'doctor_added_success': 'Doctor added successfully!',
+                'doctor_updated_success': 'Doctor updated successfully!',
+                'doctor_deleted_success': 'Doctor deleted successfully!',
+                'patient_added_success': 'Patient added successfully!',
+                'patient_updated_success': 'Patient updated successfully!',
+                'patient_deleted_success': 'Patient deleted successfully!',
+                'record_added_success': 'Record added successfully!',
+                'record_deleted_success': 'Record deleted successfully!',
+                'treatment_added_success': 'Treatment added successfully!',
+                'treatment_updated_success': 'Treatment updated successfully!',
+                'treatment_deleted_success': 'Treatment deleted successfully!',
+                'payment_added_success': 'Payment added successfully!',
+                'payment_updated_success': 'Payment updated successfully!',
+                'payment_deleted_success': 'Payment deleted successfully!',
                 
                 # Record Details
                 'record_details': '📋 Record Details',
@@ -146,6 +166,49 @@ class Translations:
                 'edit_treatment_title': 'Edit Treatment',
                 'add_new_payment': 'Add New Payment',
                 'edit_payment_title': 'Edit Payment',
+                
+                # Form Field Labels
+                'doctor_name_required': 'Doctor Name *',
+                'patient_name_required': 'Patient Name *',
+                'phone_number_required': 'Phone Number *',
+                'treatment_name_required': 'Treatment Name *',
+                'cost_required': 'Cost *',
+                'payment_amount_required': 'Payment Amount *',
+                'doctor_required': 'Doctor *',
+                'patient_required': 'Patient *',
+                
+                # Validation Messages
+                'doctor_name_required_msg': 'Doctor name is required',
+                'patient_name_required_msg': 'Patient name is required',
+                'phone_required_msg': 'Phone number is required',
+                'treatment_name_required_msg': 'Treatment name is required',
+                'cost_required_msg': 'Cost is required',
+                'amount_required_msg': 'Payment amount is required',
+                'select_doctor_msg': 'Please select a doctor',
+                'select_patient_msg': 'Please select a patient',
+                
+                # Confirmation Messages
+                'confirm_delete_doctor': 'Are you sure you want to delete Dr. {name}?\n\nNote: If this doctor has records, they will be soft-deleted (marked as deleted but kept for data integrity).',
+                'confirm_delete_patient': 'Are you sure you want to delete {name}?\n\nNote: If this patient has records, they will be soft-deleted (marked as deleted but kept for data integrity).',
+                'confirm_delete_record': 'Are you sure you want to delete this record?\n\nDoctor: {doctor}\nPatient: {patient}\n\nThis action cannot be undone.',
+                'confirm_delete_treatment': 'Are you sure you want to delete the treatment \'{name}\'?\n\nThis action cannot be undone.',
+                'confirm_delete_payment': 'Are you sure you want to delete this payment of ${amount:.2f}?\n\nThis action cannot be undone.',
+                
+                # Error Messages
+                'cannot_delete_record': 'This record cannot be deleted because it has associated treatments or payments.\n\nPlease remove all treatments and payments first.',
+                'failed_to_load': 'Failed to load {item}: {error}',
+                'failed_to_add': 'Failed to add {item}: {error}',
+                'failed_to_update': 'Failed to update {item}: {error}',
+                'failed_to_delete': 'Failed to delete {item}: {error}',
+                
+                # Info Messages
+                'no_doctors_patients': 'No doctors or patients found. Please add doctors and patients first.',
+                'no_doctors': 'No doctors found. Please add doctors first.',
+                'no_patients': 'No patients found. Please add patients first.',
+                
+                # Format Hints
+                'date_format_hint': 'Format: YYYY-MM-DD (e.g., 2024-01-15)',
+                'birth_date_format_hint': 'Format: YYYY-MM-DD (e.g., 1990-01-15)',
             },
             
             'ar': {
@@ -208,6 +271,7 @@ class Translations:
                 'col_name': 'الاسم',
                 'col_phone': 'الهاتف',
                 'col_gender': 'الجنس',
+                'col_age': 'العمر',
                 'col_birth_date': 'تاريخ الميلاد',
                 'col_created': 'تاريخ الإنشاء',
                 'col_status': 'الحالة',
@@ -249,6 +313,12 @@ class Translations:
                 'payment_date': 'تاريخ الدفع',
                 'required_fields': '* الحقول المطلوبة',
                 'optional_field': '(اختياري)',
+                'birth_date': 'تاريخ الميلاد',
+                'notes': 'الملاحظات',
+                'gender': 'الجنس',
+                'cost': 'التكلفة',
+                'amount': 'المبلغ',
+                'date': 'التاريخ',
                 
                 # Messages
                 'success': 'نجح',
@@ -256,6 +326,20 @@ class Translations:
                 'validation_error': 'خطأ في التحقق',
                 'confirm_deletion': 'تأكيد الحذف',
                 'cannot_delete': 'لا يمكن الحذف',
+                'doctor_added_success': 'تم إضافة الطبيب بنجاح!',
+                'doctor_updated_success': 'تم تحديث الطبيب بنجاح!',
+                'doctor_deleted_success': 'تم حذف الطبيب بنجاح!',
+                'patient_added_success': 'تم إضافة المريض بنجاح!',
+                'patient_updated_success': 'تم تحديث المريض بنجاح!',
+                'patient_deleted_success': 'تم حذف المريض بنجاح!',
+                'record_added_success': 'تم إضافة السجل بنجاح!',
+                'record_deleted_success': 'تم حذف السجل بنجاح!',
+                'treatment_added_success': 'تم إضافة العلاج بنجاح!',
+                'treatment_updated_success': 'تم تحديث العلاج بنجاح!',
+                'treatment_deleted_success': 'تم حذف العلاج بنجاح!',
+                'payment_added_success': 'تم إضافة الدفعة بنجاح!',
+                'payment_updated_success': 'تم تحديث الدفعة بنجاح!',
+                'payment_deleted_success': 'تم حذف الدفعة بنجاح!',
                 
                 # Record Details
                 'record_details': '📋 تفاصيل السجل',
@@ -283,6 +367,49 @@ class Translations:
                 'edit_treatment_title': 'تعديل علاج',
                 'add_new_payment': 'إضافة دفعة جديدة',
                 'edit_payment_title': 'تعديل دفعة',
+                
+                # Form Field Labels
+                'doctor_name_required': 'اسم الطبيب *',
+                'patient_name_required': 'اسم المريض *',
+                'phone_number_required': 'رقم الهاتف *',
+                'treatment_name_required': 'اسم العلاج *',
+                'cost_required': 'التكلفة *',
+                'payment_amount_required': 'مبلغ الدفع *',
+                'doctor_required': 'الطبيب *',
+                'patient_required': 'المريض *',
+                
+                # Validation Messages
+                'doctor_name_required_msg': 'اسم الطبيب مطلوب',
+                'patient_name_required_msg': 'اسم المريض مطلوب',
+                'phone_required_msg': 'رقم الهاتف مطلوب',
+                'treatment_name_required_msg': 'اسم العلاج مطلوب',
+                'cost_required_msg': 'التكلفة مطلوبة',
+                'amount_required_msg': 'مبلغ الدفع مطلوب',
+                'select_doctor_msg': 'يرجى اختيار طبيب',
+                'select_patient_msg': 'يرجى اختيار مريض',
+                
+                # Confirmation Messages
+                'confirm_delete_doctor': 'هل أنت متأكد من حذف الدكتور {name}؟\n\nملاحظة: إذا كان لدى هذا الطبيب سجلات، فسيتم حذفها بشكل مؤقت (تُعلم كمحذوفة ولكن تُحفظ للحفاظ على سلامة البيانات).',
+                'confirm_delete_patient': 'هل أنت متأكد من حذف {name}؟\n\nملاحظة: إذا كان لدى هذا المريض سجلات، فسيتم حذفها بشكل مؤقت (تُعلم كمحذوفة ولكن تُحفظ للحفاظ على سلامة البيانات).',
+                'confirm_delete_record': 'هل أنت متأكد من حذف هذا السجل؟\n\nالطبيب: {doctor}\nالمريض: {patient}\n\nلا يمكن التراجع عن هذا الإجراء.',
+                'confirm_delete_treatment': 'هل أنت متأكد من حذف العلاج \'{name}\'؟\n\nلا يمكن التراجع عن هذا الإجراء.',
+                'confirm_delete_payment': 'هل أنت متأكد من حذف هذه الدفعة بقيمة ${amount:.2f}؟\n\nلا يمكن التراجع عن هذا الإجراء.',
+                
+                # Error Messages
+                'cannot_delete_record': 'لا يمكن حذف هذا السجل لأنه يحتوي على علاجات أو مدفوعات مرتبطة.\n\nيرجى إزالة جميع العلاجات والمدفوعات أولاً.',
+                'failed_to_load': 'فشل في تحميل {item}: {error}',
+                'failed_to_add': 'فشل في إضافة {item}: {error}',
+                'failed_to_update': 'فشل في تحديث {item}: {error}',
+                'failed_to_delete': 'فشل في حذف {item}: {error}',
+                
+                # Info Messages
+                'no_doctors_patients': 'لم يتم العثور على أطباء أو مرضى. يرجى إضافة الأطباء والمرضى أولاً.',
+                'no_doctors': 'لم يتم العثور على أطباء. يرجى إضافة الأطباء أولاً.',
+                'no_patients': 'لم يتم العثور على مرضى. يرجى إضافة المرضى أولاً.',
+                
+                # Format Hints
+                'date_format_hint': 'التنسيق: سنة-شهر-يوم (مثال: 2024-01-15)',
+                'birth_date_format_hint': 'التنسيق: سنة-شهر-يوم (مثال: 1990-01-15)',
             }
         }
     

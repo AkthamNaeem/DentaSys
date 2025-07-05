@@ -24,48 +24,39 @@ class LanguageSwitch:
         )
         self.language_label.pack(side='left', padx=(0, 10))
         
-        # Language buttons frame
-        buttons_frame = ttk.Frame(self.frame)
-        buttons_frame.pack(side='left')
-        
-        # English button
-        self.english_btn = ttk.Button(
-            buttons_frame,
-            text="English",
-            command=lambda: self.switch_language('en'),
-            style='TButton' if translations.get_current_language() != 'en' else 'Success.TButton'
+        # Single toggle button
+        self.toggle_btn = ttk.Button(
+            self.frame,
+            text=self.get_toggle_text(),
+            command=self.toggle_language,
+            style='Success.TButton'
         )
-        self.english_btn.pack(side='left', padx=(0, 5), ipadx=10, ipady=4)
+        self.toggle_btn.pack(side='left', ipadx=15, ipady=6)
         
-        # Arabic button
-        self.arabic_btn = ttk.Button(
-            buttons_frame,
-            text="العربية",
-            command=lambda: self.switch_language('ar'),
-            style='TButton' if translations.get_current_language() != 'ar' else 'Success.TButton'
-        )
-        self.arabic_btn.pack(side='left', ipadx=10, ipady=4)
-        
-    def switch_language(self, language_code):
-        """Switch to the specified language"""
-        translations.set_language(language_code)
+    def get_toggle_text(self):
+        """Get the text for the toggle button based on current language"""
+        current_lang = translations.get_current_language()
+        if current_lang == 'en':
+            return "🌐 العربية"  # Show Arabic when current is English
+        else:
+            return "🌐 English"  # Show English when current is Arabic
+            
+    def toggle_language(self):
+        """Toggle between English and Arabic"""
+        current_lang = translations.get_current_language()
+        new_lang = 'ar' if current_lang == 'en' else 'en'
+        translations.set_language(new_lang)
         
     def update_ui(self):
         """Update UI elements when language changes"""
         # Update label text
         self.language_label.config(text=translations.get('language_switch'))
         
-        # Update button styles based on current language
-        current_lang = translations.get_current_language()
-        
-        self.english_btn.config(
-            style='Success.TButton' if current_lang == 'en' else 'TButton'
-        )
-        self.arabic_btn.config(
-            style='Success.TButton' if current_lang == 'ar' else 'TButton'
-        )
+        # Update toggle button text
+        self.toggle_btn.config(text=self.get_toggle_text())
         
         # Update text direction for Arabic
+        current_lang = translations.get_current_language()
         if current_lang == 'ar':
             try:
                 self.parent.option_add('*TLabel.anchor', 'e')

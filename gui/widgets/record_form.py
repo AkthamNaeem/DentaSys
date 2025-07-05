@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from models import Doctor, Patient
+from localization.translations import translations
 
 
 class RecordForm:
@@ -61,7 +62,7 @@ class RecordForm:
             self.doctors = Doctor.get_all()
             self.patients = Patient.get_all()
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to load data: {str(e)}")
+            messagebox.showerror(translations.get('error'), translations.get('failed_to_load', item='data', error=str(e)))
             self.doctors = []
             self.patients = []
             
@@ -71,7 +72,7 @@ class RecordForm:
         main_frame.pack(fill='both', expand=True)
         
         # Title
-        title_text = "Edit Record" if self.record else "Add New Record"
+        title_text = translations.get('edit_record_title') if self.record else translations.get('add_new_record')
         title_label = ttk.Label(main_frame, text=title_text, font=('Segoe UI', 16, 'bold'))
         title_label.pack(pady=(0, 30))
         
@@ -80,7 +81,7 @@ class RecordForm:
         fields_frame.pack(fill='both', expand=True, pady=(0, 30))
         
         # Doctor field
-        doctor_label = ttk.Label(fields_frame, text="Doctor *", font=('Segoe UI', 11, 'bold'))
+        doctor_label = ttk.Label(fields_frame, text=translations.get('doctor_required'), font=('Segoe UI', 11, 'bold'))
         doctor_label.pack(anchor='w', pady=(0, 8))
         
         self.doctor_var = tk.StringVar()
@@ -106,7 +107,7 @@ class RecordForm:
         self.doctor_combo.pack(fill='x', pady=(0, 20), ipady=8)
         
         # Patient field
-        patient_label = ttk.Label(fields_frame, text="Patient *", font=('Segoe UI', 11, 'bold'))
+        patient_label = ttk.Label(fields_frame, text=translations.get('patient_required'), font=('Segoe UI', 11, 'bold'))
         patient_label.pack(anchor='w', pady=(0, 8))
         
         self.patient_var = tk.StringVar()
@@ -138,11 +139,11 @@ class RecordForm:
             
             info_text = "⚠️ "
             if not self.doctors and not self.patients:
-                info_text += "No doctors or patients found. Please add doctors and patients first."
+                info_text += translations.get('no_doctors_patients')
             elif not self.doctors:
-                info_text += "No doctors found. Please add doctors first."
+                info_text += translations.get('no_doctors')
             else:
-                info_text += "No patients found. Please add patients first."
+                info_text += translations.get('no_patients')
                 
             info_label = ttk.Label(
                 info_frame, 
@@ -154,7 +155,7 @@ class RecordForm:
             info_label.pack(anchor='w')
         
         # Required fields note
-        note_label = ttk.Label(fields_frame, text="* Required fields", font=('Segoe UI', 9), foreground='#e74c3c')
+        note_label = ttk.Label(fields_frame, text=translations.get('required_fields'), font=('Segoe UI', 9), foreground='#e74c3c')
         note_label.pack(anchor='w', pady=(10, 0))
         
         # Buttons frame
@@ -164,14 +165,14 @@ class RecordForm:
         # Cancel button
         cancel_btn = ttk.Button(
             buttons_frame, 
-            text="Cancel", 
+            text=translations.get('btn_cancel'), 
             command=self.cancel,
             style='TButton'
         )
         cancel_btn.pack(side='right', padx=(15, 0), ipadx=20, ipady=8)
         
         # Save button
-        save_text = "Update" if self.record else "Save"
+        save_text = translations.get('btn_update') if self.record else translations.get('btn_save')
         save_btn = ttk.Button(
             buttons_frame, 
             text=save_text, 
@@ -210,14 +211,14 @@ class RecordForm:
         # Validate doctor selection
         doctor_selection = self.doctor_var.get()
         if not doctor_selection:
-            errors.append("Please select a doctor")
+            errors.append(translations.get('select_doctor_msg'))
         elif doctor_selection not in self.doctor_map:
             errors.append("Invalid doctor selection")
             
         # Validate patient selection
         patient_selection = self.patient_var.get()
         if not patient_selection:
-            errors.append("Please select a patient")
+            errors.append(translations.get('select_patient_msg'))
         elif patient_selection not in self.patient_map:
             errors.append("Invalid patient selection")
             
@@ -228,7 +229,7 @@ class RecordForm:
         # Validate form
         errors = self.validate_form()
         if errors:
-            messagebox.showerror("Validation Error", "\n".join(errors))
+            messagebox.showerror(translations.get('validation_error'), "\n".join(errors))
             return
             
         # Get selected IDs
