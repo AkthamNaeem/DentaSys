@@ -51,46 +51,49 @@ class PatientForm:
         
         x = parent_x + (parent_width // 2) - (dialog_width // 2)
         y = parent_y + (parent_height // 2) - (dialog_height // 2)
-        
-        self.dialog.geometry(f"550x650+{x}+{y}")
+
+        x = 100
+        y = 100
+
+        self.dialog.geometry(f"300x600+{x}+{y}")
         
     def setup_ui(self):
         # Main frame with padding
-        main_frame = ttk.Frame(self.dialog, padding=30)
+        main_frame = ttk.Frame(self.dialog, padding=15)
         main_frame.pack(fill='both', expand=True)
         
         # Title
         title_text = "Edit Patient" if self.patient else "Add New Patient"
         title_label = ttk.Label(main_frame, text=title_text, font=('Segoe UI', 16, 'bold'))
-        title_label.pack(pady=(0, 30))
+        title_label.pack(pady=(0, 10))
         
         # Form fields frame
         fields_frame = ttk.Frame(main_frame)
-        fields_frame.pack(fill='both', expand=True, pady=(0, 30))
+        fields_frame.pack(fill='both', expand=True, pady=(0, 0))
         
         # Name field
         name_label = ttk.Label(fields_frame, text="Patient Name *", font=('Segoe UI', 11, 'bold'))
-        name_label.pack(anchor='w', pady=(0, 8))
+        name_label.pack(anchor='w', pady=(0, 5))
         
         self.name_var = tk.StringVar()
         self.name_entry = ttk.Entry(fields_frame, textvariable=self.name_var, font=('Segoe UI', 11))
-        self.name_entry.pack(fill='x', pady=(0, 20), ipady=8)
+        self.name_entry.pack(fill='x', pady=(0, 10), ipady=8)
         
         # Phone field
         phone_label = ttk.Label(fields_frame, text="Phone Number *", font=('Segoe UI', 11, 'bold'))
-        phone_label.pack(anchor='w', pady=(0, 8))
+        phone_label.pack(anchor='w', pady=(0, 5))
         
         self.phone_var = tk.StringVar()
         self.phone_entry = ttk.Entry(fields_frame, textvariable=self.phone_var, font=('Segoe UI', 11))
-        self.phone_entry.pack(fill='x', pady=(0, 20), ipady=8)
+        self.phone_entry.pack(fill='x', pady=(0, 10), ipady=8)
         
         # Gender field
         gender_label = ttk.Label(fields_frame, text="Gender", font=('Segoe UI', 11, 'bold'))
-        gender_label.pack(anchor='w', pady=(0, 8))
+        gender_label.pack(anchor='w', pady=(0, 5))
         
         self.gender_var = tk.StringVar()
         gender_frame = ttk.Frame(fields_frame)
-        gender_frame.pack(fill='x', pady=(0, 20))
+        gender_frame.pack(fill='x', pady=(0, 10))
         
         self.gender_combo = ttk.Combobox(
             gender_frame, 
@@ -98,16 +101,16 @@ class PatientForm:
             values=['Male', 'Female'],
             state='readonly',
             font=('Segoe UI', 11),
-            height=8
+            height=5
         )
-        self.gender_combo.pack(fill='x', ipady=8)
+        self.gender_combo.pack(fill='x', ipady=0)
         
         # Birth date field
         birth_date_label = ttk.Label(fields_frame, text="Birth Date", font=('Segoe UI', 11, 'bold'))
-        birth_date_label.pack(anchor='w', pady=(0, 8))
+        birth_date_label.pack(anchor='w', pady=(0, 5))
         
         birth_date_frame = ttk.Frame(fields_frame)
-        birth_date_frame.pack(fill='x', pady=(0, 20))
+        birth_date_frame.pack(fill='x', pady=(0, 10))
         
         try:
             # Try to use DateEntry (tkcalendar)
@@ -120,7 +123,7 @@ class PatientForm:
                 date_pattern='yyyy-mm-dd',
                 font=('Segoe UI', 11)
             )
-            self.birth_date_entry.pack(fill='x', ipady=8)
+            self.birth_date_entry.pack(fill='x', ipady=0)
             self.has_date_picker = True
         except ImportError:
             # Fallback to regular entry if tkcalendar is not available
@@ -130,7 +133,7 @@ class PatientForm:
                 textvariable=self.birth_date_var,
                 font=('Segoe UI', 11)
             )
-            self.birth_date_entry.pack(fill='x', ipady=8)
+            self.birth_date_entry.pack(fill='x', ipady=0)
             
             # Add format hint
             hint_label = ttk.Label(
@@ -139,19 +142,19 @@ class PatientForm:
                 font=('Segoe UI', 9),
                 foreground='#7f8c8d'
             )
-            hint_label.pack(anchor='w', pady=(5, 0))
+            hint_label.pack(anchor='w', pady=(0, 0))
             self.has_date_picker = False
         
         # Notes field
         notes_label = ttk.Label(fields_frame, text="Notes", font=('Segoe UI', 11, 'bold'))
-        notes_label.pack(anchor='w', pady=(0, 8))
+        notes_label.pack(anchor='w', pady=(0, 5))
         
         notes_frame = ttk.Frame(fields_frame)
-        notes_frame.pack(fill='both', expand=True, pady=(0, 20))
+        notes_frame.pack(fill='both', expand=True, pady=(0, 10))
         
         self.notes_text = tk.Text(
             notes_frame, 
-            height=6, 
+            height=4,
             font=('Segoe UI', 11),
             wrap='word'
         )
@@ -163,11 +166,11 @@ class PatientForm:
         
         # Required fields note
         note_label = ttk.Label(fields_frame, text="* Required fields", font=('Segoe UI', 9), foreground='#e74c3c')
-        note_label.pack(anchor='w', pady=(10, 0))
+        note_label.pack(anchor='w', pady=(0, 10))
         
         # Buttons frame
         buttons_frame = ttk.Frame(main_frame)
-        buttons_frame.pack(fill='x', pady=(20, 0))
+        buttons_frame.pack(fill='x', pady=(0, 0))
         
         # Cancel button
         cancel_btn = ttk.Button(

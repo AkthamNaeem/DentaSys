@@ -129,27 +129,36 @@ class PatientsPage:
         table_frame.rowconfigure(0, weight=1)
         
         # Patients table with better height
-        columns = ('ID', 'Name', 'Phone', 'Gender', 'Age', 'Birth Date', 'Created', 'Status')
+        columns = (
+            # 'ID',
+            'Name',
+            'Phone',
+            'Gender',
+            'Age',
+            # 'Birth Date',
+            # 'Created',
+            # 'Status'
+        )
         self.patients_tree = ttk.Treeview(table_frame, columns=columns, show='headings', height=18)
         
         # Configure columns with better widths
-        self.patients_tree.heading('ID', text=translations.get('col_id'))
+        # self.patients_tree.heading('ID', text=translations.get('col_id'))
         self.patients_tree.heading('Name', text=translations.get('col_name'))
         self.patients_tree.heading('Phone', text=translations.get('col_phone'))
         self.patients_tree.heading('Gender', text=translations.get('col_gender'))
         self.patients_tree.heading('Age', text=translations.get('col_age'))
-        self.patients_tree.heading('Birth Date', text=translations.get('col_birth_date'))
-        self.patients_tree.heading('Created', text=translations.get('col_created'))
-        self.patients_tree.heading('Status', text=translations.get('col_status'))
+        # self.patients_tree.heading('Birth Date', text=translations.get('col_birth_date'))
+        # self.patients_tree.heading('Created', text=translations.get('col_created'))
+        # self.patients_tree.heading('Status', text=translations.get('col_status'))
         
-        self.patients_tree.column('ID', width=80, anchor='center')
+        # self.patients_tree.column('ID', width=80, anchor='center')
         self.patients_tree.column('Name', width=220)
         self.patients_tree.column('Phone', width=160)
         self.patients_tree.column('Gender', width=100, anchor='center')
         self.patients_tree.column('Age', width=100, anchor='center')
-        self.patients_tree.column('Birth Date', width=120, anchor='center')
-        self.patients_tree.column('Created', width=160, anchor='center')
-        self.patients_tree.column('Status', width=100, anchor='center')
+        # self.patients_tree.column('Birth Date', width=120, anchor='center')
+        # self.patients_tree.column('Created', width=160, anchor='center')
+        # self.patients_tree.column('Status', width=100, anchor='center')
         
         # Scrollbars
         v_scrollbar = ttk.Scrollbar(table_frame, orient='vertical', command=self.patients_tree.yview)
@@ -186,15 +195,15 @@ class PatientsPage:
                 status = "Deleted" if patient.deleted_at else "Active"
                 
                 self.patients_tree.insert('', 'end', values=(
-                    patient.id,
+                    # patient.id,
                     patient.name,
                     patient.phone or "",
                     patient.gender or "",
                     patient.age or "",
-                    birth_date,
-                    created_date,
-                    status
-                ), tags=(status.lower(),))
+                    # birth_date,
+                    # created_date,
+                    # status
+                ))
                 
             # Configure tags for visual feedback
             self.patients_tree.tag_configure('deleted', foreground='#e74c3c')

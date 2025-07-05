@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import re
-
+from localization.translations import translations
 
 class DoctorForm:
     def __init__(self, parent, title="Doctor Form", doctor=None):
@@ -49,46 +49,49 @@ class DoctorForm:
         
         x = parent_x + (parent_width // 2) - (dialog_width // 2)
         y = parent_y + (parent_height // 2) - (dialog_height // 2)
-        
-        self.dialog.geometry(f"500x350+{x}+{y}")
+
+        x = 100
+        y = 100
+
+        self.dialog.geometry(f"300x300+{x}+{y}")
         
     def setup_ui(self):
         # Main frame with padding
-        main_frame = ttk.Frame(self.dialog, padding=30)
+        main_frame = ttk.Frame(self.dialog, padding=15)
         main_frame.pack(fill='both', expand=True)
         
         # Title
-        title_text = "Edit Doctor" if self.doctor else "Add New Doctor"
+        title_text = translations.get('edit_doctor_title') if self.doctor else translations.get('add_new_doctor')
         title_label = ttk.Label(main_frame, text=title_text, font=('Segoe UI', 16, 'bold'))
-        title_label.pack(pady=(0, 30))
+        title_label.pack(pady=(0, 10))
         
         # Form fields frame
         fields_frame = ttk.Frame(main_frame)
-        fields_frame.pack(fill='both', expand=True, pady=(0, 30))
+        fields_frame.pack(fill='both', expand=True, pady=(0, 0))
         
         # Name field
         name_label = ttk.Label(fields_frame, text="Doctor Name *", font=('Segoe UI', 11, 'bold'))
-        name_label.pack(anchor='w', pady=(0, 8))
+        name_label.pack(anchor='w', pady=(0, 5))
         
         self.name_var = tk.StringVar()
         self.name_entry = ttk.Entry(fields_frame, textvariable=self.name_var, font=('Segoe UI', 11))
-        self.name_entry.pack(fill='x', pady=(0, 20), ipady=8)
+        self.name_entry.pack(fill='x', pady=(0, 10), ipady=8)
         
         # Phone field
         phone_label = ttk.Label(fields_frame, text="Phone Number", font=('Segoe UI', 11, 'bold'))
-        phone_label.pack(anchor='w', pady=(0, 8))
+        phone_label.pack(anchor='w', pady=(0, 5))
         
         self.phone_var = tk.StringVar()
         self.phone_entry = ttk.Entry(fields_frame, textvariable=self.phone_var, font=('Segoe UI', 11))
-        self.phone_entry.pack(fill='x', pady=(0, 20), ipady=8)
+        self.phone_entry.pack(fill='x', pady=(0, 10), ipady=8)
         
         # Required fields note
         note_label = ttk.Label(fields_frame, text="* Required fields", font=('Segoe UI', 9), foreground='#e74c3c')
-        note_label.pack(anchor='w', pady=(10, 0))
+        note_label.pack(anchor='w', pady=(0, 10))
         
         # Buttons frame
         buttons_frame = ttk.Frame(main_frame)
-        buttons_frame.pack(fill='x', pady=(20, 0))
+        buttons_frame.pack(fill='x', pady=(0, 0))
         
         # Cancel button
         cancel_btn = ttk.Button(

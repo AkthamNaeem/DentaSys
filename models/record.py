@@ -53,7 +53,7 @@ class Record:
             FROM records r
             JOIN doctors d ON r.doctor_id = d.id
             JOIN patients p ON r.patient_id = p.id
-            WHERE id = ?
+            WHERE r.id = ?
             """, (record_id,))
         record_data = cursor.fetchone()
         conn.close()

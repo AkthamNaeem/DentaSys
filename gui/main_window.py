@@ -76,13 +76,13 @@ class MainWindow:
         self.title_label.pack(anchor='w')
         
         # Subtitle with improved spacing
-        self.subtitle_label = ttk.Label(
-            title_frame, 
-            text=translations.get('app_subtitle'), 
-            font=("Segoe UI", 12),
-            foreground="#7f8c8d"
-        )
-        self.subtitle_label.pack(anchor='w', pady=(5, 0))
+        # self.subtitle_label = ttk.Label(
+        #     title_frame,
+        #     text=translations.get('app_subtitle'),
+        #     font=("Segoe UI", 12),
+        #     foreground="#7f8c8d"
+        # )
+        # self.subtitle_label.pack(anchor='w', pady=(5, 0))
         
         # Right side - Language switch
         language_frame = ttk.Frame(self.header_frame)
@@ -119,7 +119,7 @@ class MainWindow:
         self.root.title(translations.get('app_title'))
         
         # Update subtitle
-        self.subtitle_label.config(text=translations.get('app_subtitle'))
+        # self.subtitle_label.config(text=translations.get('app_subtitle'))
         
         # Update tab texts
         self.notebook.tab(0, text=translations.get('tab_home'))

@@ -85,12 +85,12 @@ class HomePage:
         )
         self.welcome_label.grid(row=0, column=0, columnspan=2, sticky="w")
         
-        self.description_label = ttk.Label(
-            welcome_frame, 
-            text=translations.get('welcome_description'),
-            font=('Segoe UI', 12)
-        )
-        self.description_label.grid(row=1, column=0, columnspan=2, sticky="w", pady=(8, 20))
+        # self.description_label = ttk.Label(
+        #     welcome_frame,
+        #     text=translations.get('welcome_description'),
+        #     font=('Segoe UI', 12)
+        # )
+        # self.description_label.grid(row=1, column=0, columnspan=2, sticky="w", pady=(8, 20))
         
         # Stats frame with better spacing
         stats_frame = ttk.Frame(welcome_frame)
@@ -290,7 +290,7 @@ class HomePage:
         """Update UI elements when language changes"""
         # Update welcome section
         self.welcome_label.config(text=translations.get('welcome_title'))
-        self.description_label.config(text=translations.get('welcome_description'))
+        # self.description_label.config(text=translations.get('welcome_description'))
         
         # Update stat card titles
         self.doctors_stat['title'].config(text=translations.get('stat_doctors'))

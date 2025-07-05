@@ -74,7 +74,7 @@ def apply_styles(root):
                    fieldbackground=colors['white'],
                    borderwidth=1,
                    relief='solid',
-                   padding=10,
+                   padding=0,
                    font=('Segoe UI', 10))
     
     style.map('TEntry',
@@ -86,7 +86,7 @@ def apply_styles(root):
                    background=colors['primary'],
                    foreground=colors['white'],
                    borderwidth=0,
-                   padding=[18, 10],
+                   padding=[0, 0],
                    font=('Segoe UI', 10, 'bold'))
     
     style.map('TButton',
