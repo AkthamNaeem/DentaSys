@@ -22,9 +22,9 @@ class DoctorsPage:
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
         
-        # Create scrollable canvas inside the main frame
+        # Create scrollable canvas for the entire page
         self.main_canvas = tk.Canvas(self.frame, highlightthickness=0)
-        self.scrollbar = ttk.Scrollbar(self.frame, orient="vertical", command=self.main_canvas.yview)
+        self.main_scrollbar = ttk.Scrollbar(self.frame, orient="vertical", command=self.main_canvas.yview)
         self.scrollable_frame = ttk.Frame(self.main_canvas)
         
         # Configure scrolling
@@ -34,24 +34,22 @@ class DoctorsPage:
         )
         
         self.main_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.main_canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.main_canvas.configure(yscrollcommand=self.main_scrollbar.set)
         
         # Grid canvas and scrollbar
         self.main_canvas.grid(row=0, column=0, sticky="nsew")
-        self.scrollbar.grid(row=0, column=1, sticky="ns")
+        self.main_scrollbar.grid(row=0, column=1, sticky="ns")
         
         # Configure grid weights for the frame
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
         
-        # Bind mousewheel to canvas
-        self.main_canvas.bind("<MouseWheel>", self._on_mousewheel)
-        self.scrollable_frame.bind("<MouseWheel>", self._on_mousewheel)
+        # Bind mousewheel to canvas for full page scrolling
+        self.bind_mousewheel()
         
         # Set up the content frame structure
         self.content_frame = self.scrollable_frame
         self.content_frame.columnconfigure(0, weight=1)
-        self.content_frame.rowconfigure(1, weight=1)
         
         # Header frame
         self.setup_header()
@@ -59,9 +57,24 @@ class DoctorsPage:
         # Content frame
         self.setup_content()
         
-    def _on_mousewheel(self, event):
-        """Handle mouse wheel scrolling"""
-        self.main_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+    def bind_mousewheel(self):
+        """Bind mousewheel events for full page scrolling"""
+        def _on_mousewheel(event):
+            self.main_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        
+        # Bind to multiple widgets to ensure scrolling works everywhere
+        self.main_canvas.bind("<MouseWheel>", _on_mousewheel)
+        self.scrollable_frame.bind("<MouseWheel>", _on_mousewheel)
+        self.frame.bind("<MouseWheel>", _on_mousewheel)
+        
+        # Function to bind mousewheel to all child widgets recursively
+        def bind_to_children(widget):
+            widget.bind("<MouseWheel>", _on_mousewheel)
+            for child in widget.winfo_children():
+                bind_to_children(child)
+        
+        # Bind after a short delay to ensure all widgets are created
+        self.frame.after(100, lambda: bind_to_children(self.scrollable_frame))
         
     def setup_header(self):
         header_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=25)
@@ -108,9 +121,8 @@ class DoctorsPage:
     def setup_content(self):
         # Content frame with better padding
         content_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=25)
-        content_frame.grid(row=1, column=0, sticky="nsew")
+        content_frame.grid(row=1, column=0, sticky="ew", pady=(0, 20))
         content_frame.columnconfigure(0, weight=1)
-        content_frame.rowconfigure(1, weight=1)
         
         # Search frame with improved layout
         search_frame = ttk.Frame(content_frame)
@@ -128,13 +140,12 @@ class DoctorsPage:
         
         # Table frame
         table_frame = ttk.Frame(content_frame)
-        table_frame.grid(row=1, column=0, sticky="nsew")
+        table_frame.grid(row=1, column=0, sticky="ew", pady=(0, 20))
         table_frame.columnconfigure(0, weight=1)
-        table_frame.rowconfigure(0, weight=1)
         
-        # Doctors table with better height
+        # Doctors table without internal scrolling - let page handle it
         columns = ('ID', 'Name', 'Phone', 'Created', 'Status')
-        self.doctors_tree = ttk.Treeview(table_frame, columns=columns, show='headings', height=18)
+        self.doctors_tree = ttk.Treeview(table_frame, columns=columns, show='headings')
         
         # Configure columns with better widths
         self.doctors_tree.heading('ID', text=translations.get('col_id'))
@@ -149,22 +160,12 @@ class DoctorsPage:
         self.doctors_tree.column('Created', width=180, anchor='center')
         self.doctors_tree.column('Status', width=120, anchor='center')
         
-        # Scrollbars
-        v_scrollbar = ttk.Scrollbar(table_frame, orient='vertical', command=self.doctors_tree.yview)
-        h_scrollbar = ttk.Scrollbar(table_frame, orient='horizontal', command=self.doctors_tree.xview)
-        self.doctors_tree.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
-        
-        # Grid table and scrollbars
-        self.doctors_tree.grid(row=0, column=0, sticky="nsew")
-        v_scrollbar.grid(row=0, column=1, sticky="ns")
-        h_scrollbar.grid(row=1, column=0, sticky="ew")
+        # Grid table without scrollbars
+        self.doctors_tree.grid(row=0, column=0, sticky="ew")
         
         # Bind events
         self.doctors_tree.bind('<<TreeviewSelect>>', self.on_doctor_select)
         self.doctors_tree.bind('<Double-1>', self.on_doctor_double_click)
-        
-        # Bind mousewheel to treeview
-        self.doctors_tree.bind("<MouseWheel>", self._on_mousewheel)
         
     def update_ui(self):
         """Update UI elements when language changes"""
@@ -186,6 +187,9 @@ class DoctorsPage:
         
         # Reload data to update status translations
         self.load_doctors()
+        
+        # Re-bind mousewheel after UI updates
+        self.frame.after(100, self.bind_mousewheel)
         
     def load_doctors(self, search_term=None):
         """Load doctors data into the table"""

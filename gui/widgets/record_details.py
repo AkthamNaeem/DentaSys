@@ -33,7 +33,7 @@ class RecordDetailsWindow:
         # Center the window
         self.center_window()
         
-        # Setup UI
+        # Setup UI with full window scrolling
         self.setup_ui()
         
         # Load data
@@ -62,18 +62,69 @@ class RecordDetailsWindow:
         self.window.geometry(f"1000x800+{x}+{y}")
         
     def setup_ui(self):
-        # Main frame with padding
-        main_frame = ttk.Frame(self.window, padding=20)
+        # Main frame for the window
+        main_frame = ttk.Frame(self.window)
         main_frame.pack(fill='both', expand=True)
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.rowconfigure(0, weight=1)
+        
+        # Create scrollable canvas for the entire window
+        self.main_canvas = tk.Canvas(main_frame, highlightthickness=0)
+        self.main_scrollbar = ttk.Scrollbar(main_frame, orient="vertical", command=self.main_canvas.yview)
+        self.scrollable_frame = ttk.Frame(self.main_canvas)
+        
+        # Configure scrolling
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.main_canvas.configure(scrollregion=self.main_canvas.bbox("all"))
+        )
+        
+        self.main_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.main_canvas.configure(yscrollcommand=self.main_scrollbar.set)
+        
+        # Grid canvas and scrollbar
+        self.main_canvas.grid(row=0, column=0, sticky="nsew")
+        self.main_scrollbar.grid(row=0, column=1, sticky="ns")
+        
+        # Configure grid weights
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.rowconfigure(0, weight=1)
+        
+        # Bind mousewheel for full window scrolling
+        self.bind_mousewheel()
+        
+        # Set up content with padding
+        content_frame = ttk.Frame(self.scrollable_frame, padding=20)
+        content_frame.pack(fill='both', expand=True)
+        content_frame.columnconfigure(0, weight=1)
         
         # Header frame with account summary
-        self.setup_header(main_frame)
+        self.setup_header(content_frame)
         
         # Content notebook
-        self.setup_content(main_frame)
+        self.setup_content(content_frame)
         
         # Buttons frame
-        self.setup_buttons(main_frame)
+        self.setup_buttons(content_frame)
+        
+    def bind_mousewheel(self):
+        """Bind mousewheel events for full window scrolling"""
+        def _on_mousewheel(event):
+            self.main_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        
+        # Bind to multiple widgets to ensure scrolling works everywhere
+        self.main_canvas.bind("<MouseWheel>", _on_mousewheel)
+        self.scrollable_frame.bind("<MouseWheel>", _on_mousewheel)
+        self.window.bind("<MouseWheel>", _on_mousewheel)
+        
+        # Function to bind mousewheel to all child widgets recursively
+        def bind_to_children(widget):
+            widget.bind("<MouseWheel>", _on_mousewheel)
+            for child in widget.winfo_children():
+                bind_to_children(child)
+        
+        # Bind after a short delay to ensure all widgets are created
+        self.window.after(100, lambda: bind_to_children(self.scrollable_frame))
         
     def setup_header(self, parent):
         header_frame = ttk.Frame(parent, style='Card.TFrame', padding=20)
@@ -216,7 +267,6 @@ class RecordDetailsWindow:
         # Treatments frame
         treatments_frame = ttk.Frame(self.notebook)
         treatments_frame.columnconfigure(0, weight=1)
-        treatments_frame.rowconfigure(1, weight=1)
         
         # Treatments header
         treatments_header = ttk.Frame(treatments_frame, padding=15)
@@ -262,16 +312,14 @@ class RecordDetailsWindow:
         
         # Treatments table
         treatments_table_frame = ttk.Frame(treatments_frame, padding=15)
-        treatments_table_frame.grid(row=1, column=0, sticky="nsew")
+        treatments_table_frame.grid(row=1, column=0, sticky="ew")
         treatments_table_frame.columnconfigure(0, weight=1)
-        treatments_table_frame.rowconfigure(0, weight=1)
         
         treatment_columns = ('ID', 'Name', 'Cost', 'Date', 'Notes')
         self.treatments_tree = ttk.Treeview(
             treatments_table_frame, 
             columns=treatment_columns, 
-            show='headings', 
-            height=12
+            show='headings'
         )
         
         # Configure treatment columns
@@ -287,26 +335,8 @@ class RecordDetailsWindow:
         self.treatments_tree.column('Date', width=120, anchor='center')
         self.treatments_tree.column('Notes', width=300)
         
-        # Treatment scrollbars
-        treatment_v_scrollbar = ttk.Scrollbar(
-            treatments_table_frame, 
-            orient='vertical', 
-            command=self.treatments_tree.yview
-        )
-        treatment_h_scrollbar = ttk.Scrollbar(
-            treatments_table_frame, 
-            orient='horizontal', 
-            command=self.treatments_tree.xview
-        )
-        self.treatments_tree.configure(
-            yscrollcommand=treatment_v_scrollbar.set,
-            xscrollcommand=treatment_h_scrollbar.set
-        )
-        
-        # Grid treatment table and scrollbars
-        self.treatments_tree.grid(row=0, column=0, sticky="nsew")
-        treatment_v_scrollbar.grid(row=0, column=1, sticky="ns")
-        treatment_h_scrollbar.grid(row=1, column=0, sticky="ew")
+        # Grid treatment table without scrollbars
+        self.treatments_tree.grid(row=0, column=0, sticky="ew")
         
         # Bind treatment events
         self.treatments_tree.bind('<<TreeviewSelect>>', self.on_treatment_select)
@@ -318,7 +348,6 @@ class RecordDetailsWindow:
         # Payments frame
         payments_frame = ttk.Frame(self.notebook)
         payments_frame.columnconfigure(0, weight=1)
-        payments_frame.rowconfigure(1, weight=1)
         
         # Payments header
         payments_header = ttk.Frame(payments_frame, padding=15)
@@ -364,16 +393,14 @@ class RecordDetailsWindow:
         
         # Payments table
         payments_table_frame = ttk.Frame(payments_frame, padding=15)
-        payments_table_frame.grid(row=1, column=0, sticky="nsew")
+        payments_table_frame.grid(row=1, column=0, sticky="ew")
         payments_table_frame.columnconfigure(0, weight=1)
-        payments_table_frame.rowconfigure(0, weight=1)
         
         payment_columns = ('ID', 'Amount', 'Date', 'Notes')
         self.payments_tree = ttk.Treeview(
             payments_table_frame, 
             columns=payment_columns, 
-            show='headings', 
-            height=12
+            show='headings'
         )
         
         # Configure payment columns
@@ -387,26 +414,8 @@ class RecordDetailsWindow:
         self.payments_tree.column('Date', width=120, anchor='center')
         self.payments_tree.column('Notes', width=400)
         
-        # Payment scrollbars
-        payment_v_scrollbar = ttk.Scrollbar(
-            payments_table_frame, 
-            orient='vertical', 
-            command=self.payments_tree.yview
-        )
-        payment_h_scrollbar = ttk.Scrollbar(
-            payments_table_frame, 
-            orient='horizontal', 
-            command=self.payments_tree.xview
-        )
-        self.payments_tree.configure(
-            yscrollcommand=payment_v_scrollbar.set,
-            xscrollcommand=payment_h_scrollbar.set
-        )
-        
-        # Grid payment table and scrollbars
-        self.payments_tree.grid(row=0, column=0, sticky="nsew")
-        payment_v_scrollbar.grid(row=0, column=1, sticky="ns")
-        payment_h_scrollbar.grid(row=1, column=0, sticky="ew")
+        # Grid payment table without scrollbars
+        self.payments_tree.grid(row=0, column=0, sticky="ew")
         
         # Bind payment events
         self.payments_tree.bind('<<TreeviewSelect>>', self.on_payment_select)
@@ -417,7 +426,7 @@ class RecordDetailsWindow:
     def setup_buttons(self, parent):
         # Buttons frame
         buttons_frame = ttk.Frame(parent)
-        buttons_frame.pack(fill='x')
+        buttons_frame.pack(fill='x', pady=(20, 0))
         
         # Export PDF button
         export_btn = ttk.Button(
