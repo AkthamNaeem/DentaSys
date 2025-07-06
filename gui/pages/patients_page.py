@@ -17,7 +17,7 @@ class PatientsPage:
         self.load_patients()
         
     def setup_ui(self):
-        # Main frame for the tab
+        # Main frame for the tab - full width
         self.frame = ttk.Frame(self.parent)
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
@@ -47,7 +47,7 @@ class PatientsPage:
         # Bind mousewheel to canvas for full page scrolling
         self.bind_mousewheel()
         
-        # Set up the content frame structure
+        # Set up the content frame structure with full width
         self.content_frame = self.scrollable_frame
         self.content_frame.columnconfigure(0, weight=1)
         
@@ -77,8 +77,8 @@ class PatientsPage:
         self.frame.after(100, lambda: bind_to_children(self.scrollable_frame))
         
     def setup_header(self):
-        header_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=25)
-        header_frame.grid(row=0, column=0, sticky="ew", pady=(0, 20))
+        header_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=20)
+        header_frame.grid(row=0, column=0, sticky="ew", pady=(0, 15))
         header_frame.columnconfigure(1, weight=1)
         
         # Title with better typography
@@ -119,28 +119,28 @@ class PatientsPage:
         self.delete_btn.pack(side='right', ipadx=15, ipady=8)
         
     def setup_content(self):
-        # Content frame with better padding
-        content_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=25)
-        content_frame.grid(row=1, column=0, sticky="ew", pady=(0, 20))
+        # Content frame with full width and minimal padding
+        content_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=20)
+        content_frame.grid(row=1, column=0, sticky="ew", pady=(0, 15))
         content_frame.columnconfigure(0, weight=1)
         
-        # Search frame with improved layout
+        # Search frame with full width
         search_frame = ttk.Frame(content_frame)
         search_frame.grid(row=0, column=0, sticky="ew", pady=(0, 20))
         search_frame.columnconfigure(1, weight=1)
         
-        # Search label and entry with better sizing
+        # Search label and entry with full width
         self.search_label = ttk.Label(search_frame, text=translations.get('search_patients'), font=('Segoe UI', 12, 'bold'))
         self.search_label.grid(row=0, column=0, sticky="w", padx=(0, 15))
         
         self.search_var = tk.StringVar()
-        self.search_entry = ttk.Entry(search_frame, textvariable=self.search_var, font=('Segoe UI', 11), width=40)
-        self.search_entry.grid(row=0, column=1, sticky="w", ipady=6)
+        self.search_entry = ttk.Entry(search_frame, textvariable=self.search_var, font=('Segoe UI', 11))
+        self.search_entry.grid(row=0, column=1, sticky="ew", ipady=6)
         self.search_var.trace('w', self.on_search)
         
-        # Table frame
+        # Table frame with full width
         table_frame = ttk.Frame(content_frame)
-        table_frame.grid(row=1, column=0, sticky="ew", pady=(0, 20))
+        table_frame.grid(row=1, column=0, sticky="ew", pady=(0, 15))
         table_frame.columnconfigure(0, weight=1)
         
         # Patients table without internal scrolling - let page handle it
@@ -152,18 +152,18 @@ class PatientsPage:
         )
         self.patients_tree = ttk.Treeview(table_frame, columns=columns, show='headings')
         
-        # Configure columns with better widths
+        # Configure columns with better widths for full screen
         self.patients_tree.heading('Name', text=translations.get('col_name'))
         self.patients_tree.heading('Phone', text=translations.get('col_phone'))
         self.patients_tree.heading('Gender', text=translations.get('col_gender'))
         self.patients_tree.heading('Age', text=translations.get('col_age'))
         
-        self.patients_tree.column('Name', width=220)
-        self.patients_tree.column('Phone', width=160)
-        self.patients_tree.column('Gender', width=100, anchor='center')
-        self.patients_tree.column('Age', width=100, anchor='center')
+        self.patients_tree.column('Name', width=300)
+        self.patients_tree.column('Phone', width=200)
+        self.patients_tree.column('Gender', width=150, anchor='center')
+        self.patients_tree.column('Age', width=150, anchor='center')
         
-        # Grid table without scrollbars
+        # Grid table without scrollbars - full width
         self.patients_tree.grid(row=0, column=0, sticky="ew")
         
         # Bind events

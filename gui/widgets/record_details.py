@@ -25,7 +25,7 @@ class RecordDetailsWindow:
         # Create window
         self.window = tk.Toplevel(parent)
         self.window.title(f"Record Details - {record.doctor_name} & {record.patient_name}")
-        self.window.geometry("1000x800")
+        self.window.geometry("1200x900")
         self.window.resizable(True, True)
         self.window.transient(parent)
         self.window.grab_set()
@@ -59,7 +59,7 @@ class RecordDetailsWindow:
         x = parent_x + (parent_width // 2) - (window_width // 2)
         y = parent_y + (parent_height // 2) - (window_height // 2)
         
-        self.window.geometry(f"1000x800+{x}+{y}")
+        self.window.geometry(f"1200x900+{x}+{y}")
         
     def setup_ui(self):
         # Main frame for the window
@@ -93,8 +93,8 @@ class RecordDetailsWindow:
         # Bind mousewheel for full window scrolling
         self.bind_mousewheel()
         
-        # Set up content with padding
-        content_frame = ttk.Frame(self.scrollable_frame, padding=20)
+        # Set up content with minimal padding for full width
+        content_frame = ttk.Frame(self.scrollable_frame, padding=15)
         content_frame.pack(fill='both', expand=True)
         content_frame.columnconfigure(0, weight=1)
         
@@ -127,8 +127,8 @@ class RecordDetailsWindow:
         self.window.after(100, lambda: bind_to_children(self.scrollable_frame))
         
     def setup_header(self, parent):
-        header_frame = ttk.Frame(parent, style='Card.TFrame', padding=20)
-        header_frame.pack(fill='x', pady=(0, 20))
+        header_frame = ttk.Frame(parent, style='Card.TFrame', padding=15)
+        header_frame.pack(fill='x', pady=(0, 15))
         header_frame.columnconfigure(1, weight=1)
         
         # Left side - Record info
@@ -253,9 +253,9 @@ class RecordDetailsWindow:
         balance_label.pack()
         
     def setup_content(self, parent):
-        # Create notebook for treatments and payments
+        # Create notebook for treatments and payments with full width
         self.notebook = ttk.Notebook(parent)
-        self.notebook.pack(fill='both', expand=True, pady=(0, 20))
+        self.notebook.pack(fill='both', expand=True, pady=(0, 15))
         
         # Treatments tab
         self.setup_treatments_tab()
@@ -264,7 +264,7 @@ class RecordDetailsWindow:
         self.setup_payments_tab()
         
     def setup_treatments_tab(self):
-        # Treatments frame
+        # Treatments frame with full width
         treatments_frame = ttk.Frame(self.notebook)
         treatments_frame.columnconfigure(0, weight=1)
         
@@ -310,7 +310,7 @@ class RecordDetailsWindow:
         )
         self.delete_treatment_btn.pack(side='right', ipadx=15, ipady=8)
         
-        # Treatments table
+        # Treatments table with full width
         treatments_table_frame = ttk.Frame(treatments_frame, padding=15)
         treatments_table_frame.grid(row=1, column=0, sticky="ew")
         treatments_table_frame.columnconfigure(0, weight=1)
@@ -322,7 +322,7 @@ class RecordDetailsWindow:
             show='headings'
         )
         
-        # Configure treatment columns
+        # Configure treatment columns with better widths for full screen
         self.treatments_tree.heading('ID', text=translations.get('col_id'))
         self.treatments_tree.heading('Name', text=translations.get('treatment_name'))
         self.treatments_tree.heading('Cost', text=translations.get('col_cost'))
@@ -330,12 +330,12 @@ class RecordDetailsWindow:
         self.treatments_tree.heading('Notes', text=translations.get('col_notes'))
         
         self.treatments_tree.column('ID', width=60, anchor='center')
-        self.treatments_tree.column('Name', width=250)
-        self.treatments_tree.column('Cost', width=120, anchor='center')
-        self.treatments_tree.column('Date', width=120, anchor='center')
-        self.treatments_tree.column('Notes', width=300)
+        self.treatments_tree.column('Name', width=300)
+        self.treatments_tree.column('Cost', width=150, anchor='center')
+        self.treatments_tree.column('Date', width=150, anchor='center')
+        self.treatments_tree.column('Notes', width=400)
         
-        # Grid treatment table without scrollbars
+        # Grid treatment table without scrollbars - full width
         self.treatments_tree.grid(row=0, column=0, sticky="ew")
         
         # Bind treatment events
@@ -345,7 +345,7 @@ class RecordDetailsWindow:
         self.notebook.add(treatments_frame, text=translations.get('treatments_tab'))
         
     def setup_payments_tab(self):
-        # Payments frame
+        # Payments frame with full width
         payments_frame = ttk.Frame(self.notebook)
         payments_frame.columnconfigure(0, weight=1)
         
@@ -391,7 +391,7 @@ class RecordDetailsWindow:
         )
         self.delete_payment_btn.pack(side='right', ipadx=15, ipady=8)
         
-        # Payments table
+        # Payments table with full width
         payments_table_frame = ttk.Frame(payments_frame, padding=15)
         payments_table_frame.grid(row=1, column=0, sticky="ew")
         payments_table_frame.columnconfigure(0, weight=1)
@@ -403,18 +403,18 @@ class RecordDetailsWindow:
             show='headings'
         )
         
-        # Configure payment columns
+        # Configure payment columns with better widths for full screen
         self.payments_tree.heading('ID', text=translations.get('col_id'))
         self.payments_tree.heading('Amount', text=translations.get('col_amount'))
         self.payments_tree.heading('Date', text=translations.get('col_date'))
         self.payments_tree.heading('Notes', text=translations.get('col_notes'))
         
         self.payments_tree.column('ID', width=60, anchor='center')
-        self.payments_tree.column('Amount', width=120, anchor='center')
-        self.payments_tree.column('Date', width=120, anchor='center')
-        self.payments_tree.column('Notes', width=400)
+        self.payments_tree.column('Amount', width=150, anchor='center')
+        self.payments_tree.column('Date', width=150, anchor='center')
+        self.payments_tree.column('Notes', width=500)
         
-        # Grid payment table without scrollbars
+        # Grid payment table without scrollbars - full width
         self.payments_tree.grid(row=0, column=0, sticky="ew")
         
         # Bind payment events
@@ -426,7 +426,7 @@ class RecordDetailsWindow:
     def setup_buttons(self, parent):
         # Buttons frame
         buttons_frame = ttk.Frame(parent)
-        buttons_frame.pack(fill='x', pady=(20, 0))
+        buttons_frame.pack(fill='x', pady=(15, 0))
         
         # Export PDF button
         export_btn = ttk.Button(

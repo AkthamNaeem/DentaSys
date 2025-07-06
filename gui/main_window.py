@@ -50,8 +50,8 @@ class MainWindow:
         self.apply_text_direction()
         
     def setup_ui(self):
-        # Main container with optimized padding
-        self.main_frame = ttk.Frame(self.root, padding="15")
+        # Main container with minimal padding for full width usage
+        self.main_frame = ttk.Frame(self.root, padding="10")
         self.main_frame.grid(row=0, column=0, sticky="nsew")
         
         # Configure grid weights
@@ -60,9 +60,9 @@ class MainWindow:
         self.main_frame.columnconfigure(0, weight=1)
         self.main_frame.rowconfigure(1, weight=1)
         
-        # Header frame with better proportions
+        # Header frame with minimal padding
         self.header_frame = ttk.Frame(self.main_frame)
-        self.header_frame.grid(row=0, column=0, sticky="ew", pady=(0, 15))
+        self.header_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10))
         self.header_frame.columnconfigure(1, weight=1)
         
         # Left side - Title and subtitle
@@ -86,26 +86,26 @@ class MainWindow:
         self.language_switch = LanguageSwitch(language_frame)
         self.language_switch.frame.pack(anchor='e')
         
-        # Create notebook for tabs with better sizing
+        # Create notebook for tabs with full width
         self.notebook = ttk.Notebook(self.main_frame)
         self.notebook.grid(row=1, column=0, sticky="nsew")
         
     def setup_pages(self):
         # Home Page
         self.home_page = HomePage(self.notebook)
-        self.notebook.add(self.home_page.frame, text=translations.get('tab_home'), padding=15)
+        self.notebook.add(self.home_page.frame, text=translations.get('tab_home'), padding=0)
         
         # Doctors Page
         self.doctors_page = DoctorsPage(self.notebook)
-        self.notebook.add(self.doctors_page.frame, text=translations.get('tab_doctors'), padding=15)
+        self.notebook.add(self.doctors_page.frame, text=translations.get('tab_doctors'), padding=0)
         
         # Patients Page
         self.patients_page = PatientsPage(self.notebook)
-        self.notebook.add(self.patients_page.frame, text=translations.get('tab_patients'), padding=15)
+        self.notebook.add(self.patients_page.frame, text=translations.get('tab_patients'), padding=0)
         
         # Records Page
         self.records_page = RecordsPage(self.notebook)
-        self.notebook.add(self.records_page.frame, text=translations.get('tab_records'), padding=15)
+        self.notebook.add(self.records_page.frame, text=translations.get('tab_records'), padding=0)
         
     def apply_text_direction(self):
         """Apply RTL or LTR text direction based on current language"""
