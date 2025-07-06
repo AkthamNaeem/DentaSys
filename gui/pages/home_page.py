@@ -19,14 +19,14 @@ class HomePage:
         self.setup_ui()
         
     def setup_ui(self):
-        # Main frame for the tab
+        # Main frame for the tab - full width
         self.frame = ttk.Frame(self.parent)
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
         
-        # Create scrollable canvas inside the main frame
+        # Create scrollable canvas for the entire page
         self.main_canvas = tk.Canvas(self.frame, highlightthickness=0)
-        self.scrollbar = ttk.Scrollbar(self.frame, orient="vertical", command=self.main_canvas.yview)
+        self.main_scrollbar = ttk.Scrollbar(self.frame, orient="vertical", command=self.main_canvas.yview)
         self.scrollable_frame = ttk.Frame(self.main_canvas)
         
         # Configure scrolling
@@ -36,24 +36,22 @@ class HomePage:
         )
         
         self.main_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.main_canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.main_canvas.configure(yscrollcommand=self.main_scrollbar.set)
         
         # Grid canvas and scrollbar
         self.main_canvas.grid(row=0, column=0, sticky="nsew")
-        self.scrollbar.grid(row=0, column=1, sticky="ns")
+        self.main_scrollbar.grid(row=0, column=1, sticky="ns")
         
         # Configure grid weights for the frame
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
         
-        # Bind mousewheel to canvas
-        self.main_canvas.bind("<MouseWheel>", self._on_mousewheel)
-        self.scrollable_frame.bind("<MouseWheel>", self._on_mousewheel)
+        # Bind mousewheel to canvas for full page scrolling
+        self.bind_mousewheel()
         
-        # Set up the content frame structure with better spacing
+        # Set up the content frame structure with full width
         self.content_frame = self.scrollable_frame
         self.content_frame.columnconfigure(0, weight=1)
-        self.content_frame.rowconfigure(2, weight=1)
         
         # Welcome section
         self.setup_welcome_section()
@@ -67,14 +65,31 @@ class HomePage:
         # Load initial data
         self.load_dashboard_stats()
         
-    def _on_mousewheel(self, event):
-        """Handle mouse wheel scrolling"""
-        self.main_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+    def bind_mousewheel(self):
+        """Bind mousewheel events to the main canvas for full page scrolling"""
+        def _on_mousewheel(event):
+            self.main_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        
+        # Bind to multiple widgets to ensure scrolling works everywhere
+        self.main_canvas.bind("<MouseWheel>", _on_mousewheel)
+        self.scrollable_frame.bind("<MouseWheel>", _on_mousewheel)
+        
+        # Bind to the frame itself
+        self.frame.bind("<MouseWheel>", _on_mousewheel)
+        
+        # Function to bind mousewheel to all child widgets recursively
+        def bind_to_children(widget):
+            widget.bind("<MouseWheel>", _on_mousewheel)
+            for child in widget.winfo_children():
+                bind_to_children(child)
+        
+        # Bind after a short delay to ensure all widgets are created
+        self.frame.after(100, lambda: bind_to_children(self.scrollable_frame))
         
     def setup_welcome_section(self):
-        # Welcome frame with better padding
-        welcome_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=25)
-        welcome_frame.grid(row=0, column=0, sticky="ew", pady=(0, 20))
+        # Welcome frame with full width and minimal padding
+        welcome_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=20)
+        welcome_frame.grid(row=0, column=0, sticky="ew", pady=(0, 15))
         welcome_frame.columnconfigure(1, weight=1)
         
         # Welcome text with improved typography
@@ -85,16 +100,9 @@ class HomePage:
         )
         self.welcome_label.grid(row=0, column=0, columnspan=2, sticky="w")
         
-        # self.description_label = ttk.Label(
-        #     welcome_frame,
-        #     text=translations.get('welcome_description'),
-        #     font=('Segoe UI', 12)
-        # )
-        # self.description_label.grid(row=1, column=0, columnspan=2, sticky="w", pady=(8, 20))
-        
-        # Stats frame with better spacing
+        # Stats frame with full width
         stats_frame = ttk.Frame(welcome_frame)
-        stats_frame.grid(row=2, column=0, columnspan=2, sticky="ew")
+        stats_frame.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(20, 0))
         stats_frame.columnconfigure((0, 1, 2), weight=1)
         
         # Stats cards with improved sizing
@@ -104,7 +112,7 @@ class HomePage:
         
     def create_stat_card(self, parent, title, value, color, column):
         card_frame = ttk.Frame(parent, style='Card.TFrame', padding=20)
-        card_frame.grid(row=0, column=column, sticky="ew", padx=(0, 15) if column < 2 else 0)
+        card_frame.grid(row=0, column=column, sticky="ew", padx=(0, 10) if column < 2 else 0)
         
         # Value label with larger font
         value_label = ttk.Label(
@@ -127,16 +135,16 @@ class HomePage:
         return {'value': value_label, 'title': title_label}
         
     def setup_search_section(self):
-        # Search frame with better padding
-        search_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=25)
-        search_frame.grid(row=1, column=0, sticky="ew", pady=(0, 20))
+        # Search frame with full width and minimal padding
+        search_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=20)
+        search_frame.grid(row=1, column=0, sticky="ew", pady=(0, 15))
         search_frame.columnconfigure(1, weight=1)
         
         # Search label with improved typography
         self.search_label = ttk.Label(search_frame, text=translations.get('search_title'), style='Heading.TLabel')
         self.search_label.grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 15))
         
-        # Search entry with better sizing
+        # Search entry with full width
         self.search_entry_label = ttk.Label(search_frame, text=translations.get('search_placeholder'), font=('Segoe UI', 11))
         self.search_entry_label.grid(row=1, column=0, sticky="w", pady=(0, 8))
         
@@ -144,8 +152,7 @@ class HomePage:
         self.search_entry = ttk.Entry(
             search_frame, 
             textvariable=self.search_var,
-            font=('Segoe UI', 12),
-            width=60
+            font=('Segoe UI', 12)
         )
         self.search_entry.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(0, 12), ipady=8)
         
@@ -162,19 +169,18 @@ class HomePage:
         self.search_status.grid(row=3, column=0, columnspan=2, sticky="w")
         
     def setup_results_section(self):
-        # Results frame with better padding
-        results_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=25)
-        results_frame.grid(row=2, column=0, sticky="nsew")
+        # Results frame with full width and minimal padding
+        results_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=20)
+        results_frame.grid(row=2, column=0, sticky="ew", pady=(0, 15))
         results_frame.columnconfigure(0, weight=1)
-        results_frame.rowconfigure(1, weight=1)
         
         # Results label with improved spacing
         self.results_label = ttk.Label(results_frame, text=translations.get('dashboard_title'), style='Heading.TLabel')
         self.results_label.grid(row=0, column=0, sticky="w", pady=(0, 15))
         
-        # Create notebook for different result types
+        # Create notebook for different result types with full width
         self.results_notebook = ttk.Notebook(results_frame)
-        self.results_notebook.grid(row=1, column=0, sticky="nsew")
+        self.results_notebook.grid(row=1, column=0, sticky="ew")
         
         # Doctors results
         self.setup_doctors_results()
@@ -186,14 +192,13 @@ class HomePage:
         self.setup_records_results()
         
     def setup_doctors_results(self):
-        # Doctors frame with padding
-        doctors_frame = ttk.Frame(self.results_notebook, padding=15)
+        # Doctors frame with full width
+        doctors_frame = ttk.Frame(self.results_notebook, padding=10)
         doctors_frame.columnconfigure(0, weight=1)
-        doctors_frame.rowconfigure(0, weight=1)
         
-        # Doctors treeview with better height
+        # Doctors treeview with fixed height (no internal scrolling)
         doctors_columns = ('ID', 'Name', 'Phone', 'Created')
-        self.doctors_tree = ttk.Treeview(doctors_frame, columns=doctors_columns, show='headings', height=12)
+        self.doctors_tree = ttk.Treeview(doctors_frame, columns=doctors_columns, show='headings', height=8)
         
         # Configure columns with better widths
         self.doctors_tree.heading('ID', text=translations.get('col_id'))
@@ -206,25 +211,19 @@ class HomePage:
         self.doctors_tree.column('Phone', width=180)
         self.doctors_tree.column('Created', width=180)
         
-        # Scrollbar for doctors
-        doctors_scrollbar = ttk.Scrollbar(doctors_frame, orient='vertical', command=self.doctors_tree.yview)
-        self.doctors_tree.configure(yscrollcommand=doctors_scrollbar.set)
-        
-        # Grid doctors treeview and scrollbar
-        self.doctors_tree.grid(row=0, column=0, sticky="nsew")
-        doctors_scrollbar.grid(row=0, column=1, sticky="ns")
+        # Grid doctors treeview (no scrollbar - let page scroll handle it)
+        self.doctors_tree.grid(row=0, column=0, sticky="ew")
         
         self.results_notebook.add(doctors_frame, text=translations.get('tab_doctors'))
         
     def setup_patients_results(self):
-        # Patients frame with padding
-        patients_frame = ttk.Frame(self.results_notebook, padding=15)
+        # Patients frame with full width
+        patients_frame = ttk.Frame(self.results_notebook, padding=10)
         patients_frame.columnconfigure(0, weight=1)
-        patients_frame.rowconfigure(0, weight=1)
         
-        # Patients treeview with better height
+        # Patients treeview with fixed height (no internal scrolling)
         patients_columns = ('ID', 'Name', 'Phone', 'Gender', 'Birth Date')
-        self.patients_tree = ttk.Treeview(patients_frame, columns=patients_columns, show='headings', height=12)
+        self.patients_tree = ttk.Treeview(patients_frame, columns=patients_columns, show='headings', height=8)
         
         # Configure columns with better widths
         self.patients_tree.heading('ID', text=translations.get('col_id'))
@@ -239,25 +238,19 @@ class HomePage:
         self.patients_tree.column('Gender', width=120, anchor='center')
         self.patients_tree.column('Birth Date', width=140, anchor='center')
         
-        # Scrollbar for patients
-        patients_scrollbar = ttk.Scrollbar(patients_frame, orient='vertical', command=self.patients_tree.yview)
-        self.patients_tree.configure(yscrollcommand=patients_scrollbar.set)
-        
-        # Grid patients treeview and scrollbar
-        self.patients_tree.grid(row=0, column=0, sticky="nsew")
-        patients_scrollbar.grid(row=0, column=1, sticky="ns")
+        # Grid patients treeview (no scrollbar - let page scroll handle it)
+        self.patients_tree.grid(row=0, column=0, sticky="ew")
         
         self.results_notebook.add(patients_frame, text=translations.get('tab_patients'))
         
     def setup_records_results(self):
-        # Records frame with padding
-        records_frame = ttk.Frame(self.results_notebook, padding=15)
+        # Records frame with full width
+        records_frame = ttk.Frame(self.results_notebook, padding=10)
         records_frame.columnconfigure(0, weight=1)
-        records_frame.rowconfigure(0, weight=1)
         
-        # Records treeview with better height
+        # Records treeview with fixed height (no internal scrolling)
         records_columns = ('ID', 'Doctor', 'Patient', 'Cost', 'Paid', 'Balance', 'Created')
-        self.records_tree = ttk.Treeview(records_frame, columns=records_columns, show='headings', height=12)
+        self.records_tree = ttk.Treeview(records_frame, columns=records_columns, show='headings', height=8)
         
         # Configure columns with better widths
         self.records_tree.heading('ID', text=translations.get('col_id'))
@@ -276,13 +269,8 @@ class HomePage:
         self.records_tree.column('Balance', width=120, anchor='center')
         self.records_tree.column('Created', width=180)
         
-        # Scrollbar for records
-        records_scrollbar = ttk.Scrollbar(records_frame, orient='vertical', command=self.records_tree.yview)
-        self.records_tree.configure(yscrollcommand=records_scrollbar.set)
-        
-        # Grid records treeview and scrollbar
-        self.records_tree.grid(row=0, column=0, sticky="nsew")
-        records_scrollbar.grid(row=0, column=1, sticky="ns")
+        # Grid records treeview (no scrollbar - let page scroll handle it)
+        self.records_tree.grid(row=0, column=0, sticky="ew")
         
         self.results_notebook.add(records_frame, text=translations.get('tab_records'))
         
@@ -290,7 +278,6 @@ class HomePage:
         """Update UI elements when language changes"""
         # Update welcome section
         self.welcome_label.config(text=translations.get('welcome_title'))
-        # self.description_label.config(text=translations.get('welcome_description'))
         
         # Update stat card titles
         self.doctors_stat['title'].config(text=translations.get('stat_doctors'))
@@ -332,6 +319,9 @@ class HomePage:
         self.results_notebook.tab(0, text=translations.get('tab_doctors'))
         self.results_notebook.tab(1, text=translations.get('tab_patients'))
         self.results_notebook.tab(2, text=translations.get('tab_records'))
+        
+        # Re-bind mousewheel after UI updates
+        self.frame.after(100, self.bind_mousewheel)
         
     def load_dashboard_stats(self):
         """Load dashboard statistics"""

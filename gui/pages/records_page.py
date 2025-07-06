@@ -18,14 +18,14 @@ class RecordsPage:
         self.load_records()
         
     def setup_ui(self):
-        # Main frame for the tab
+        # Main frame for the tab - full width
         self.frame = ttk.Frame(self.parent)
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
         
-        # Create scrollable canvas inside the main frame
+        # Create scrollable canvas for the entire page
         self.main_canvas = tk.Canvas(self.frame, highlightthickness=0)
-        self.scrollbar = ttk.Scrollbar(self.frame, orient="vertical", command=self.main_canvas.yview)
+        self.main_scrollbar = ttk.Scrollbar(self.frame, orient="vertical", command=self.main_canvas.yview)
         self.scrollable_frame = ttk.Frame(self.main_canvas)
         
         # Configure scrolling
@@ -35,24 +35,22 @@ class RecordsPage:
         )
         
         self.main_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.main_canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.main_canvas.configure(yscrollcommand=self.main_scrollbar.set)
         
         # Grid canvas and scrollbar
         self.main_canvas.grid(row=0, column=0, sticky="nsew")
-        self.scrollbar.grid(row=0, column=1, sticky="ns")
+        self.main_scrollbar.grid(row=0, column=1, sticky="ns")
         
         # Configure grid weights for the frame
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
         
-        # Bind mousewheel to canvas
-        self.main_canvas.bind("<MouseWheel>", self._on_mousewheel)
-        self.scrollable_frame.bind("<MouseWheel>", self._on_mousewheel)
+        # Bind mousewheel to canvas for full page scrolling
+        self.bind_mousewheel()
         
-        # Set up the content frame structure
+        # Set up the content frame structure with full width
         self.content_frame = self.scrollable_frame
         self.content_frame.columnconfigure(0, weight=1)
-        self.content_frame.rowconfigure(1, weight=1)
         
         # Header frame
         self.setup_header()
@@ -60,13 +58,28 @@ class RecordsPage:
         # Content frame
         self.setup_content()
         
-    def _on_mousewheel(self, event):
-        """Handle mouse wheel scrolling"""
-        self.main_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+    def bind_mousewheel(self):
+        """Bind mousewheel events for full page scrolling"""
+        def _on_mousewheel(event):
+            self.main_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        
+        # Bind to multiple widgets to ensure scrolling works everywhere
+        self.main_canvas.bind("<MouseWheel>", _on_mousewheel)
+        self.scrollable_frame.bind("<MouseWheel>", _on_mousewheel)
+        self.frame.bind("<MouseWheel>", _on_mousewheel)
+        
+        # Function to bind mousewheel to all child widgets recursively
+        def bind_to_children(widget):
+            widget.bind("<MouseWheel>", _on_mousewheel)
+            for child in widget.winfo_children():
+                bind_to_children(child)
+        
+        # Bind after a short delay to ensure all widgets are created
+        self.frame.after(100, lambda: bind_to_children(self.scrollable_frame))
         
     def setup_header(self):
-        header_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=25)
-        header_frame.grid(row=0, column=0, sticky="ew", pady=(0, 20))
+        header_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=20)
+        header_frame.grid(row=0, column=0, sticky="ew", pady=(0, 15))
         header_frame.columnconfigure(1, weight=1)
         
         # Title with better typography
@@ -107,37 +120,35 @@ class RecordsPage:
         self.delete_btn.pack(side='right', ipadx=15, ipady=8)
         
     def setup_content(self):
-        # Content frame with better padding
-        content_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=25)
-        content_frame.grid(row=1, column=0, sticky="nsew")
+        # Content frame with full width and minimal padding
+        content_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=20)
+        content_frame.grid(row=1, column=0, sticky="ew", pady=(0, 15))
         content_frame.columnconfigure(0, weight=1)
-        content_frame.rowconfigure(1, weight=1)
         
-        # Search frame with improved layout
+        # Search frame with full width
         search_frame = ttk.Frame(content_frame)
         search_frame.grid(row=0, column=0, sticky="ew", pady=(0, 20))
         search_frame.columnconfigure(1, weight=1)
         
-        # Search label and entry with better sizing
+        # Search label and entry with full width
         self.search_label = ttk.Label(search_frame, text=translations.get('search_records'), font=('Segoe UI', 12, 'bold'))
         self.search_label.grid(row=0, column=0, sticky="w", padx=(0, 15))
         
         self.search_var = tk.StringVar()
-        self.search_entry = ttk.Entry(search_frame, textvariable=self.search_var, font=('Segoe UI', 11), width=40)
-        self.search_entry.grid(row=0, column=1, sticky="w", ipady=6)
+        self.search_entry = ttk.Entry(search_frame, textvariable=self.search_var, font=('Segoe UI', 11))
+        self.search_entry.grid(row=0, column=1, sticky="ew", ipady=6)
         self.search_var.trace('w', self.on_search)
         
-        # Table frame
+        # Table frame with full width
         table_frame = ttk.Frame(content_frame)
-        table_frame.grid(row=1, column=0, sticky="nsew")
+        table_frame.grid(row=1, column=0, sticky="ew", pady=(0, 15))
         table_frame.columnconfigure(0, weight=1)
-        table_frame.rowconfigure(0, weight=1)
         
-        # Records table with better height
+        # Records table without internal scrolling - let page handle it
         columns = ('ID', 'Doctor', 'Patient', 'Total Cost', 'Total Paid', 'Balance', 'Created')
-        self.records_tree = ttk.Treeview(table_frame, columns=columns, show='headings', height=18)
+        self.records_tree = ttk.Treeview(table_frame, columns=columns, show='headings')
         
-        # Configure columns with better widths
+        # Configure columns with better widths for full screen
         self.records_tree.heading('ID', text=translations.get('col_id'))
         self.records_tree.heading('Doctor', text=translations.get('col_doctor'))
         self.records_tree.heading('Patient', text=translations.get('col_patient'))
@@ -147,29 +158,19 @@ class RecordsPage:
         self.records_tree.heading('Created', text=translations.get('col_created'))
         
         self.records_tree.column('ID', width=80, anchor='center')
-        self.records_tree.column('Doctor', width=180)
-        self.records_tree.column('Patient', width=180)
-        self.records_tree.column('Total Cost', width=120, anchor='center')
-        self.records_tree.column('Total Paid', width=120, anchor='center')
-        self.records_tree.column('Balance', width=120, anchor='center')
-        self.records_tree.column('Created', width=180, anchor='center')
+        self.records_tree.column('Doctor', width=200)
+        self.records_tree.column('Patient', width=200)
+        self.records_tree.column('Total Cost', width=140, anchor='center')
+        self.records_tree.column('Total Paid', width=140, anchor='center')
+        self.records_tree.column('Balance', width=140, anchor='center')
+        self.records_tree.column('Created', width=200, anchor='center')
         
-        # Scrollbars
-        v_scrollbar = ttk.Scrollbar(table_frame, orient='vertical', command=self.records_tree.yview)
-        h_scrollbar = ttk.Scrollbar(table_frame, orient='horizontal', command=self.records_tree.xview)
-        self.records_tree.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
-        
-        # Grid table and scrollbars
-        self.records_tree.grid(row=0, column=0, sticky="nsew")
-        v_scrollbar.grid(row=0, column=1, sticky="ns")
-        h_scrollbar.grid(row=1, column=0, sticky="ew")
+        # Grid table without scrollbars - full width
+        self.records_tree.grid(row=0, column=0, sticky="ew")
         
         # Bind events
         self.records_tree.bind('<<TreeviewSelect>>', self.on_record_select)
         self.records_tree.bind('<Double-1>', self.on_record_double_click)
-        
-        # Bind mousewheel to treeview
-        self.records_tree.bind("<MouseWheel>", self._on_mousewheel)
         
     def update_ui(self):
         """Update UI elements when language changes"""
@@ -190,6 +191,9 @@ class RecordsPage:
         self.records_tree.heading('Total Paid', text=translations.get('col_total_paid'))
         self.records_tree.heading('Balance', text=translations.get('col_balance'))
         self.records_tree.heading('Created', text=translations.get('col_created'))
+        
+        # Re-bind mousewheel after UI updates
+        self.frame.after(100, self.bind_mousewheel)
         
     def load_records(self, search_term=None):
         """Load records data into the table"""
