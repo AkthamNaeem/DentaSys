@@ -271,7 +271,7 @@ class RecordDetailsWindow:
             treatments_table_frame, 
             columns=treatment_columns, 
             show='headings', 
-            height=12
+            height=6
         )
         
         # Configure treatment columns
@@ -373,7 +373,7 @@ class RecordDetailsWindow:
             payments_table_frame, 
             columns=payment_columns, 
             show='headings', 
-            height=12
+            height=6
         )
         
         # Configure payment columns
