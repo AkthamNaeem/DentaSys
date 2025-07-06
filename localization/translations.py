@@ -1,11 +1,15 @@
 """
 Translation system for DentaSys
-Supports English and Arabic languages
+Supports English and Arabic languages with RTL/LTR support and persistence
 """
+import json
+import os
+from pathlib import Path
 
 class Translations:
     def __init__(self):
-        self.current_language = 'en'  # Default to English
+        self.config_file = Path.home() / '.dentasys_config.json'
+        self.current_language = self.load_language_preference()
         self.observers = []  # List of callbacks to notify when language changes
         
         # Translation dictionaries
@@ -433,6 +437,35 @@ class Translations:
             }
         }
     
+    def load_language_preference(self):
+        """Load saved language preference from config file"""
+        try:
+            if self.config_file.exists():
+                with open(self.config_file, 'r', encoding='utf-8') as f:
+                    config = json.load(f)
+                    return config.get('language', 'en')
+        except Exception as e:
+            print(f"Error loading language preference: {e}")
+        return 'en'  # Default to English
+    
+    def save_language_preference(self, language_code):
+        """Save language preference to config file"""
+        try:
+            config = {}
+            if self.config_file.exists():
+                with open(self.config_file, 'r', encoding='utf-8') as f:
+                    config = json.load(f)
+            
+            config['language'] = language_code
+            
+            # Ensure directory exists
+            self.config_file.parent.mkdir(exist_ok=True)
+            
+            with open(self.config_file, 'w', encoding='utf-8') as f:
+                json.dump(config, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            print(f"Error saving language preference: {e}")
+    
     def get(self, key, **kwargs):
         """Get translated text for the current language"""
         text = self.translations.get(self.current_language, {}).get(key, key)
@@ -450,11 +483,16 @@ class Translations:
         """Set the current language and notify observers"""
         if language_code in self.translations:
             self.current_language = language_code
+            self.save_language_preference(language_code)
             self.notify_observers()
     
     def get_current_language(self):
         """Get the current language code"""
         return self.current_language
+    
+    def is_rtl(self):
+        """Check if current language is RTL"""
+        return self.current_language == 'ar'
     
     def add_observer(self, callback):
         """Add a callback to be notified when language changes"""

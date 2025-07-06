@@ -46,6 +46,9 @@ class MainWindow:
         # Initialize pages
         self.setup_pages()
         
+        # Apply initial RTL/LTR layout
+        self.apply_text_direction()
+        
     def setup_ui(self):
         # Main container with optimized padding
         self.main_frame = ttk.Frame(self.root, padding="15")
@@ -74,15 +77,6 @@ class MainWindow:
             foreground="#2c3e50"
         )
         self.title_label.pack(anchor='w')
-        
-        # Subtitle with improved spacing
-        # self.subtitle_label = ttk.Label(
-        #     title_frame,
-        #     text=translations.get('app_subtitle'),
-        #     font=("Segoe UI", 12),
-        #     foreground="#7f8c8d"
-        # )
-        # self.subtitle_label.pack(anchor='w', pady=(5, 0))
         
         # Right side - Language switch
         language_frame = ttk.Frame(self.header_frame)
@@ -113,13 +107,50 @@ class MainWindow:
         self.records_page = RecordsPage(self.notebook)
         self.notebook.add(self.records_page.frame, text=translations.get('tab_records'), padding=15)
         
+    def apply_text_direction(self):
+        """Apply RTL or LTR text direction based on current language"""
+        is_rtl = translations.is_rtl()
+        
+        try:
+            if is_rtl:
+                # Configure RTL layout for Arabic
+                self.root.option_add('*TLabel.justify', 'right')
+                self.root.option_add('*TButton.justify', 'right')
+                self.root.option_add('*TEntry.justify', 'right')
+                
+                # Update header layout for RTL
+                self.title_label.pack(anchor='e')
+                self.language_switch.frame.pack(anchor='w')
+                
+                # Reconfigure header grid for RTL
+                title_frame = self.title_label.master
+                language_frame = self.language_switch.frame.master
+                title_frame.grid(row=0, column=1, sticky="e")
+                language_frame.grid(row=0, column=0, sticky="w")
+                
+            else:
+                # Configure LTR layout for English
+                self.root.option_add('*TLabel.justify', 'left')
+                self.root.option_add('*TButton.justify', 'left')
+                self.root.option_add('*TEntry.justify', 'left')
+                
+                # Update header layout for LTR
+                self.title_label.pack(anchor='w')
+                self.language_switch.frame.pack(anchor='e')
+                
+                # Reconfigure header grid for LTR
+                title_frame = self.title_label.master
+                language_frame = self.language_switch.frame.master
+                title_frame.grid(row=0, column=0, sticky="w")
+                language_frame.grid(row=0, column=1, sticky="e")
+                
+        except Exception as e:
+            print(f"Error applying text direction: {e}")
+        
     def update_ui(self):
         """Update UI elements when language changes"""
         # Update window title
         self.root.title(translations.get('app_title'))
-        
-        # Update subtitle
-        # self.subtitle_label.config(text=translations.get('app_subtitle'))
         
         # Update tab texts
         self.notebook.tab(0, text=translations.get('tab_home'))
@@ -127,22 +158,11 @@ class MainWindow:
         self.notebook.tab(2, text=translations.get('tab_patients'))
         self.notebook.tab(3, text=translations.get('tab_records'))
         
-        # Handle RTL layout for Arabic
-        current_lang = translations.get_current_language()
-        if current_lang == 'ar':
-            # Configure RTL layout
-            try:
-                self.root.option_add('*TLabel.justify', 'right')
-                self.root.option_add('*TButton.justify', 'right')
-            except:
-                pass
-        else:
-            # Configure LTR layout
-            try:
-                self.root.option_add('*TLabel.justify', 'left')
-                self.root.option_add('*TButton.justify', 'left')
-            except:
-                pass
+        # Apply text direction changes
+        self.apply_text_direction()
+        
+        # Force UI refresh
+        self.root.update_idletasks()
         
     def run(self):
         self.root.mainloop()

@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
+from localization.translations import translations
 
 
 def apply_styles(root):
-    """Apply modern styling to the application"""
+    """Apply modern styling to the application with RTL/LTR support"""
     
     # Create a style object
     style = ttk.Style()
@@ -53,7 +54,7 @@ def apply_styles(root):
                    relief='solid',
                    borderwidth=1)
     
-    # Configure Labels with better typography
+    # Configure Labels with better typography and RTL support
     style.configure('TLabel',
                    background=colors['white'],
                    foreground=colors['secondary'],
@@ -69,7 +70,7 @@ def apply_styles(root):
                    foreground=colors['primary'],
                    font=('Segoe UI', 18, 'bold'))
     
-    # Configure Entry widgets with better sizing
+    # Configure Entry widgets with better sizing and RTL support
     style.configure('TEntry',
                    fieldbackground=colors['white'],
                    borderwidth=1,
@@ -120,7 +121,7 @@ def apply_styles(root):
               background=[('active', '#c0392b'),
                          ('pressed', '#c0392b')])
     
-    # Configure Treeview with better sizing
+    # Configure Treeview with better sizing and RTL support
     style.configure('Treeview',
                    background=colors['white'],
                    foreground=colors['secondary'],
@@ -150,7 +151,7 @@ def apply_styles(root):
                    darkcolor=colors['light'],
                    lightcolor=colors['light'])
     
-    # Configure Combobox
+    # Configure Combobox with RTL support
     style.configure('TCombobox',
                    fieldbackground=colors['white'],
                    background=colors['white'],
@@ -162,3 +163,27 @@ def apply_styles(root):
     style.map('TCombobox',
               focuscolor=[('!focus', colors['gray_light']),
                          ('focus', colors['primary'])])
+    
+    # Apply RTL/LTR specific styles
+    apply_direction_styles(root)
+
+
+def apply_direction_styles(root):
+    """Apply direction-specific styles based on current language"""
+    is_rtl = translations.is_rtl()
+    
+    try:
+        if is_rtl:
+            # RTL-specific configurations
+            root.option_add('*TLabel.anchor', 'e')
+            root.option_add('*TButton.anchor', 'e')
+            root.option_add('*TEntry.justify', 'right')
+            root.option_add('*Text.wrap', 'word')
+        else:
+            # LTR-specific configurations
+            root.option_add('*TLabel.anchor', 'w')
+            root.option_add('*TButton.anchor', 'w')
+            root.option_add('*TEntry.justify', 'left')
+            root.option_add('*Text.wrap', 'word')
+    except Exception as e:
+        print(f"Error applying direction styles: {e}")
