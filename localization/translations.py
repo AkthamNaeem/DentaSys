@@ -223,6 +223,15 @@ class Translations:
                 # Format Hints
                 'date_format_hint': 'Format: YYYY-MM-DD (e.g., 2024-01-15)',
                 'birth_date_format_hint': 'Format: YYYY-MM-DD (e.g., 1990-01-15)',
+                
+                # Details View
+                'doctor_details': 'Doctor Details',
+                'patient_details': 'Patient Details',
+                'back_to_list': 'Back to List',
+                'related_records': 'Related Records',
+                'total_revenue': 'Total Revenue',
+                'total_paid_by_patient': 'Total Paid',
+                'statistics': 'Statistics',
             },
             
             'ar': {
@@ -434,6 +443,15 @@ class Translations:
                 # Format Hints
                 'date_format_hint': 'التنسيق: سنة-شهر-يوم (مثال: 2024-01-15)',
                 'birth_date_format_hint': 'التنسيق: سنة-شهر-يوم (مثال: 1990-01-15)',
+                
+                # Details View
+                'doctor_details': 'تفاصيل الطبيب',
+                'patient_details': 'تفاصيل المريض',
+                'back_to_list': 'العودة للقائمة',
+                'related_records': 'السجلات المرتبطة',
+                'total_revenue': 'إجمالي الإيرادات',
+                'total_paid_by_patient': 'إجمالي المدفوع',
+                'statistics': 'الإحصائيات',
             }
         }
     

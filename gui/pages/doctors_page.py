@@ -167,6 +167,163 @@ class DoctorsPage:
         self.doctors_tree.bind('<<TreeviewSelect>>', self.on_doctor_select)
         self.doctors_tree.bind('<Double-1>', self.on_doctor_double_click)
         
+        # Details section (initially hidden)
+        self.setup_details_section()
+        
+    def setup_details_section(self):
+        """Setup the details section for showing doctor info and related records"""
+        # Details frame (initially hidden)
+        self.details_frame = ttk.Frame(self.content_frame, style='Card.TFrame', padding=20)
+        # Don't grid it initially - will be shown when doctor is selected
+        
+        # Doctor details header
+        self.details_header = ttk.Frame(self.details_frame)
+        self.details_header.grid(row=0, column=0, sticky="ew", pady=(0, 20))
+        self.details_header.columnconfigure(1, weight=1)
+        
+        # Doctor info section
+        self.doctor_info_frame = ttk.Frame(self.details_header)
+        self.doctor_info_frame.grid(row=0, column=0, sticky="w")
+        
+        # Doctor details title
+        self.doctor_details_title = ttk.Label(
+            self.doctor_info_frame,
+            text="👨‍⚕️ Doctor Details",
+            font=('Segoe UI', 16, 'bold'),
+            foreground='#2c3e50'
+        )
+        self.doctor_details_title.pack(anchor='w')
+        
+        # Doctor name
+        self.doctor_name_label = ttk.Label(
+            self.doctor_info_frame,
+            text="Dr. Name",
+            font=('Segoe UI', 14, 'bold'),
+            foreground='#3498db'
+        )
+        self.doctor_name_label.pack(anchor='w', pady=(5, 0))
+        
+        # Doctor phone
+        self.doctor_phone_label = ttk.Label(
+            self.doctor_info_frame,
+            text="📞 Phone: N/A",
+            font=('Segoe UI', 11)
+        )
+        self.doctor_phone_label.pack(anchor='w')
+        
+        # Doctor created date
+        self.doctor_created_label = ttk.Label(
+            self.doctor_info_frame,
+            text="📅 Created: N/A",
+            font=('Segoe UI', 10),
+            foreground='#7f8c8d'
+        )
+        self.doctor_created_label.pack(anchor='w')
+        
+        # Statistics section
+        self.stats_frame = ttk.Frame(self.details_header)
+        self.stats_frame.grid(row=0, column=1, sticky="e")
+        
+        # Stats title
+        stats_title = ttk.Label(
+            self.stats_frame,
+            text="📊 Statistics",
+            font=('Segoe UI', 12, 'bold'),
+            foreground='#2c3e50'
+        )
+        stats_title.pack(anchor='e', pady=(0, 10))
+        
+        # Stats cards
+        stats_cards_frame = ttk.Frame(self.stats_frame)
+        stats_cards_frame.pack(anchor='e')
+        
+        # Records count
+        self.records_card = ttk.Frame(stats_cards_frame, style='Card.TFrame', padding=10)
+        self.records_card.pack(side='left', padx=(0, 10))
+        
+        self.records_count = ttk.Label(
+            self.records_card,
+            text="0",
+            font=('Segoe UI', 14, 'bold'),
+            foreground='#3498db'
+        )
+        self.records_count.pack()
+        
+        records_label = ttk.Label(
+            self.records_card,
+            text=translations.get('stat_records'),
+            font=('Segoe UI', 9),
+            foreground='#7f8c8d'
+        )
+        records_label.pack()
+        
+        # Total revenue
+        self.revenue_card = ttk.Frame(stats_cards_frame, style='Card.TFrame', padding=10)
+        self.revenue_card.pack(side='left')
+        
+        self.revenue_amount = ttk.Label(
+            self.revenue_card,
+            text="$0.00",
+            font=('Segoe UI', 14, 'bold'),
+            foreground='#27ae60'
+        )
+        self.revenue_amount.pack()
+        
+        revenue_label = ttk.Label(
+            self.revenue_card,
+            text="Total Revenue",
+            font=('Segoe UI', 9),
+            foreground='#7f8c8d'
+        )
+        revenue_label.pack()
+        
+        # Back button
+        self.back_btn = ttk.Button(
+            self.details_header,
+            text="← Back to List",
+            command=self.hide_details,
+            style='TButton'
+        )
+        self.back_btn.grid(row=0, column=2, sticky="ne", padx=(20, 0))
+        
+        # Related records section
+        records_section = ttk.Frame(self.details_frame)
+        records_section.grid(row=1, column=0, sticky="ew", pady=(0, 15))
+        records_section.columnconfigure(0, weight=1)
+        
+        # Records title
+        records_title = ttk.Label(
+            records_section,
+            text="📋 Related Records",
+            font=('Segoe UI', 14, 'bold'),
+            foreground='#2c3e50'
+        )
+        records_title.pack(anchor='w', pady=(0, 15))
+        
+        # Records table
+        records_columns = ('ID', 'Patient', 'Total Cost', 'Total Paid', 'Balance', 'Created')
+        self.doctor_records_tree = ttk.Treeview(records_section, columns=records_columns, show='headings')
+        
+        # Configure columns
+        self.doctor_records_tree.heading('ID', text=translations.get('col_id'))
+        self.doctor_records_tree.heading('Patient', text=translations.get('col_patient'))
+        self.doctor_records_tree.heading('Total Cost', text=translations.get('col_total_cost'))
+        self.doctor_records_tree.heading('Total Paid', text=translations.get('col_total_paid'))
+        self.doctor_records_tree.heading('Balance', text=translations.get('col_balance'))
+        self.doctor_records_tree.heading('Created', text=translations.get('col_created'))
+        
+        self.doctor_records_tree.column('ID', width=80, anchor='center')
+        self.doctor_records_tree.column('Patient', width=250)
+        self.doctor_records_tree.column('Total Cost', width=150, anchor='center')
+        self.doctor_records_tree.column('Total Paid', width=150, anchor='center')
+        self.doctor_records_tree.column('Balance', width=150, anchor='center')
+        self.doctor_records_tree.column('Created', width=200, anchor='center')
+        
+        self.doctor_records_tree.pack(fill='both', expand=True)
+        
+        # Bind double-click to open record details
+        self.doctor_records_tree.bind('<Double-1>', self.on_record_double_click)
+        
     def update_ui(self):
         """Update UI elements when language changes"""
         # Update header
@@ -190,6 +347,105 @@ class DoctorsPage:
         
         # Re-bind mousewheel after UI updates
         self.frame.after(100, self.bind_mousewheel)
+        
+    def show_details(self, doctor):
+        """Show doctor details and related records"""
+        self.selected_doctor = doctor
+        
+        # Update doctor info
+        self.doctor_name_label.config(text=f"Dr. {doctor.name}")
+        self.doctor_phone_label.config(text=f"📞 Phone: {doctor.phone or 'N/A'}")
+        
+        created_date = doctor.created_at.strftime("%Y-%m-%d %H:%M") if doctor.created_at else "N/A"
+        self.doctor_created_label.config(text=f"📅 Created: {created_date}")
+        
+        # Load related records
+        self.load_doctor_records(doctor.id)
+        
+        # Show details frame and hide main content
+        self.details_frame.grid(row=2, column=0, sticky="ew", pady=(15, 0))
+        self.content_frame.rowconfigure(2, weight=1)
+        
+        # Update button states
+        self.edit_btn.config(state='normal')
+        self.delete_btn.config(state='disabled')  # Disable delete when viewing details
+        
+    def hide_details(self):
+        """Hide doctor details and return to list view"""
+        self.details_frame.grid_forget()
+        self.selected_doctor = None
+        self.edit_btn.config(state='disabled')
+        self.delete_btn.config(state='disabled')
+        
+    def load_doctor_records(self, doctor_id):
+        """Load records for the selected doctor"""
+        # Clear existing data
+        for item in self.doctor_records_tree.get_children():
+            self.doctor_records_tree.delete(item)
+            
+        try:
+            from models import Record
+            records = Record.get_by_doctor(doctor_id)
+            
+            total_records = len(records)
+            total_revenue = 0
+            
+            for record in records:
+                # Get financial data
+                total_cost = record.cost()
+                total_paid = record.amount()
+                balance = record.balance()
+                total_revenue += total_paid
+                
+                created_date = record.created_at.strftime("%Y-%m-%d %H:%M") if record.created_at else ""
+                
+                # Color coding for balance
+                if balance > 0:
+                    tag = 'unpaid'
+                elif balance == 0 and total_cost > 0:
+                    tag = 'paid'
+                else:
+                    tag = 'no_treatments'
+                
+                self.doctor_records_tree.insert('', 'end', values=(
+                    record.id,
+                    getattr(record, 'patient_name', 'Unknown'),
+                    f"${total_cost:.2f}",
+                    f"${total_paid:.2f}",
+                    f"${balance:.2f}",
+                    created_date
+                ), tags=(tag,))
+            
+            # Configure tags for visual feedback
+            self.doctor_records_tree.tag_configure('unpaid', foreground='#e74c3c')
+            self.doctor_records_tree.tag_configure('paid', foreground='#27ae60')
+            self.doctor_records_tree.tag_configure('no_treatments', foreground='#7f8c8d')
+            
+            # Update statistics
+            self.records_count.config(text=str(total_records))
+            self.revenue_amount.config(text=f"${total_revenue:.2f}")
+            
+        except Exception as e:
+            messagebox.showerror(translations.get('error'), f"Failed to load doctor records: {str(e)}")
+            
+    def on_record_double_click(self, event):
+        """Handle double-click on record in doctor details view"""
+        selection = self.doctor_records_tree.selection()
+        if selection:
+            item = self.doctor_records_tree.item(selection[0])
+            record_id = item['values'][0]
+            
+            try:
+                from models import Record
+                from gui.widgets.record_details import RecordDetailsWindow
+                
+                record = Record.get_by_id(record_id)
+                if record:
+                    RecordDetailsWindow(self.content_frame, record)
+                    # Refresh the records after closing details window
+                    self.load_doctor_records(self.selected_doctor.id)
+            except Exception as e:
+                messagebox.showerror(translations.get('error'), f"Failed to open record details: {str(e)}")
         
     def load_doctors(self, search_term=None):
         """Load doctors data into the table"""
@@ -240,7 +496,7 @@ class DoctorsPage:
             
             # Enable edit and delete buttons
             self.edit_btn.config(state='normal')
-            self.delete_btn.config(state='disabled')
+            self.delete_btn.config(state='normal')
         else:
             self.selected_doctor = None
             self.edit_btn.config(state='disabled')
@@ -249,7 +505,7 @@ class DoctorsPage:
     def on_doctor_double_click(self, event):
         """Handle double-click on doctor row"""
         if self.selected_doctor:
-            self.edit_doctor()
+            self.show_details(self.selected_doctor)
             
     def add_doctor(self):
         """Open add doctor dialog"""
